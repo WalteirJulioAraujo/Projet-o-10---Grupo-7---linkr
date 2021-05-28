@@ -9,7 +9,8 @@ import TrendingBar from "./TrendingBar";
 
 export default function MyPosts(){
 
-    const { user } = useContext(Usercontext);
+    //const { user } = useContext(Usercontext);
+    const user = JSON.parse(localStorage.getItem('user'));
     const [ posts, setPosts ] = useState([]);
     const [ requestLoading, setRequestLoading ] = useState(1);
     const [ erro, setErro ] = useState(0);

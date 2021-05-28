@@ -7,8 +7,10 @@ export default function CreatePosts({loadingPosts}) {
   const [link, setLink] = useState("");
   const [text, setText] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
-  const {user} = useContext(Usercontext);
+  //const {user} = useContext(Usercontext);
+  const user = JSON.parse(localStorage.getItem('user'));
   const image = user.user.avatar;
+  
   
   function Submit(event) {
     event.preventDefault();

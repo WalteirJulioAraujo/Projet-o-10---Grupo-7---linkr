@@ -10,7 +10,8 @@ import UserContext from "../contexts/UserContext";
 
 export default function Mylikes(){
 
-    const {user} = useContext(UserContext);
+    //const {user} = useContext(UserContext);
+    const user = JSON.parse(localStorage.getItem('user'));
     const [likedPosts, setLikedPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState(false)

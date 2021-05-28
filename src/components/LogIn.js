@@ -1,11 +1,12 @@
 import UserContext from '../contexts/UserContext'
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import styled from "styled-components";
 import { useState } from "react";
 import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
 
 export default function LogIn(){
+    
     const { setUser } = useContext(UserContext);
 
     const [email, setEmail] = useState("");
@@ -14,6 +15,11 @@ export default function LogIn(){
 
     let history = useHistory();
 
+    if(localStorage.length !== 0 ){
+        
+        history.push('/timeline');
+    }
+   
     function SendInfo(e) {
         setDisabled(true);
         e.preventDefault();
@@ -24,12 +30,14 @@ export default function LogIn(){
             info
         );
         request.then((e) => {
-            setUser(e.data);
-            history.push("/timeline");
+            //setUser(e.data);
+            
             //Local Storage
             const userSerial = JSON.stringify(e.data);
             localStorage.setItem("user",userSerial);
             //
+            console.log("login console.log")
+            history.push("/timeline");
         });
         request.catch((e) => {
             if (e.response.status === 403) {

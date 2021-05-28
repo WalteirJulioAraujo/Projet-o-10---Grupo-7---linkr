@@ -14,8 +14,9 @@ export default function Post({post, id, postUser, likes}) {
 
     const [likeQuantity, setLikeQuantity] = useState(likes.length);
     const [like, setLike] = useState(0);
-    const { user } = useContext(UserContext);
-
+    //const { user } = useContext(UserContext);
+    const user = JSON.parse(localStorage.getItem('user'));
+    
     useEffect(() => {
         likes.some(like => like.userId === user.user.id || like.id === user.user.id) ? setLike(1) : setLike(0);
     },[]);

@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import Usercontext from '../contexts/UserContext'
 
 export default function TrendingBar() {
-    const { user } = useContext(Usercontext)
+    //const { user } = useContext(Usercontext)
+    const user = JSON.parse(localStorage.getItem('user'));
     const [hashtags, setHashtags] = useState([])
 
     useEffect(() => trendingTopics(),[])

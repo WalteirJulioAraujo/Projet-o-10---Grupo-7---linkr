@@ -10,7 +10,8 @@ import TrendingBar from "./TrendingBar";
 import UserContext from "../contexts/UserContext";
 
 export default function Hashtag(){
-    const {user} = useContext(UserContext);
+    //const {user} = useContext(UserContext);
+    const user = JSON.parse(localStorage.getItem('user'));
     const [hashtagPosts, setHashtagPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState(false)

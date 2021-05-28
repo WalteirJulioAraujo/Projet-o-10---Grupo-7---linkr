@@ -7,13 +7,19 @@ import ClickAwayListener from 'react-click-away-listener';
 
 export default function Navbar() {
 
-    const { user } = useContext(Usercontext);
+    //const { user } = useContext(Usercontext);
+    const user = JSON.parse(localStorage.getItem('user'));
+    
     const [showMenu, setShowMenu] = useState(0);
 
     function toggleMenu() {
         showMenu === 0 ? setShowMenu(1) : setShowMenu(0);
     }
     
+    function ClearLocalStorage(){
+        localStorage.removeItem('user');
+    }
+
     return (
         <>
             <Header >
@@ -36,7 +42,7 @@ export default function Navbar() {
                         <Link to='/my-likes'>
                             <h2>My likes</h2>
                         </Link>
-                        <Link to='/'>
+                        <Link to='/' onClick={ClearLocalStorage}>
                             <h3>Logout</h3>
                         </Link>
                     </Links>

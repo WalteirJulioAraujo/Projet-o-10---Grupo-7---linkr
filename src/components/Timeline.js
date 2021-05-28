@@ -9,7 +9,9 @@ import TrendingBar from './TrendingBar';
 import CreatePosts from './CreatePosts';
 
 export default function Timeline(){
-    const {user} = useContext(UserContext);
+    console.log(localStorage)
+    //const {user} = useContext(UserContext);
+    const user = JSON.parse(localStorage.getItem('user'))
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState(false)
