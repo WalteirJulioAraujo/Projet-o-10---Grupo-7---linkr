@@ -17,7 +17,7 @@ export default function LogIn(){
 
     if(localStorage.length !== 0 ){
         
-        history.push('/timeline');
+        //history.push('/timeline');
     }
    
     function SendInfo(e) {
@@ -30,7 +30,7 @@ export default function LogIn(){
             info
         );
         request.then((e) => {
-            //setUser(e.data);
+            setUser(e.data);
             
             //Local Storage
             const userSerial = JSON.stringify(e.data);
@@ -40,6 +40,7 @@ export default function LogIn(){
             history.push("/timeline");
         });
         request.catch((e) => {
+            setDisabled(false);
             if (e.response.status === 403) {
                 alert("Usuário de email/senha incorretos");
                 return;

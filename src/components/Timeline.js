@@ -9,25 +9,32 @@ import TrendingBar from './TrendingBar';
 import CreatePosts from './CreatePosts';
 
 export default function Timeline(){
-    console.log(localStorage)
-    //const {user} = useContext(UserContext);
-    const user = JSON.parse(localStorage.getItem('user'))
+    const {user, setUser} = useContext(UserContext);
+    //const user = JSON.parse(localStorageg.etItem('user'));
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState(false)
     const [isEmpty, setIsEmpty] = useState(false)
+    
+   
+
+
 
     useEffect(() => {loadingPosts()},[])
 
+   
     function loadingPosts() {
+        const localstorage = JSON.parse(localStorage.user);
+        const token = user?user.token:localstorage.token;
         setIsLoading(true)
         setIsError(false)
-        const config = { headers:{ Authorization: `Bearer ${user.token}`}};
+        const config = { headers:{ Authorization: `Bearer ${token}`}};
         const request = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts', config)
 
         request.then( response => {
-            const data = response.data.posts
-            setPosts([...response.data.posts])
+            setUser(localStorage.user);
+            const data = response.data.posts;
+            setPosts([...response.data.posts]);
             setIsLoading(false)
             if(posts === data) {
                 setIsEmpty(true)
