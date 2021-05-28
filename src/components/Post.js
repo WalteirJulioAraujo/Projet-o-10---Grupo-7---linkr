@@ -104,7 +104,7 @@ function toggleLike() {
     );
     request.then((response) => {
       setControler(false);
-      loadingPosts();
+      reloadingPosts();
 
     });
     request.catch(() => {
