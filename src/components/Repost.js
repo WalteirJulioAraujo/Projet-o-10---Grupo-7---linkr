@@ -4,7 +4,8 @@ export default function Repost({ConfirmRepost}) {
     return(
         <>
         <RepostStyle onClick={ConfirmRepost}>
-            Repost
+            Repost 
+            
         </RepostStyle>
         </>
     )
