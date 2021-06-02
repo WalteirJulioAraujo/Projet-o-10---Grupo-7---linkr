@@ -9,11 +9,9 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
-
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
 import Repost from "./Repost"
-
 import UserContext from "../contexts/UserContext";
 
 export default function Post({
@@ -36,7 +34,7 @@ export default function Post({
   const inputRefText = useRef(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
+  const [isRepost, setIsRepost] = useState(false);
  
 
   useEffect(() => {
@@ -201,6 +199,11 @@ export default function Post({
   
   function RepostPost(){
     console.log("oi");
+
+    //post normla mais a barra de cima com informação, vamos precisar componentizar.
+    return(<>
+    
+    </>);
   }
 
   function ConfirmRepost(){
@@ -221,9 +224,11 @@ export default function Post({
     });
   }
 
-  return (
+  return (<>
+    
     <PostContainer key={postUser.id}>
-      <Profile>
+     <RepostBar>Repost bar</RepostBar> 
+     <Profile>
         <Link to={`/user/${postUser.id}`}>
           <img src={postUser.avatar} alt={`${postUser.username}' profile`} />
         </Link>
@@ -358,9 +363,21 @@ export default function Post({
          }  
       </Content>
     </PostContainer>
+    </>
   );
 }
-
+const RepostBar = styled.div`
+position: absolute;
+z-index: -1;
+background-color: gray;
+width: 611px;
+height: 40px;
+bottom: 405px;
+left:0px;
+background: #1E1E1E;
+border-radius: 16px;
+color: white;
+`;
 const YoutubePlayer = styled.div`
   display: flex;
   flex-direction: column;
@@ -380,9 +397,11 @@ const YoutubePlayer = styled.div`
 
 const PostContainer = styled.div`
   display: flex;
+  position: relative;
   justify-content: space-between;
   //height: 276px;
   width: 100%;
+  z-index: 3;
   font-weight: 400;
   padding: 18px 18px 20px 21px;
   background: #171717;
@@ -402,6 +421,7 @@ const Profile = styled.div`
   justify-content: space-between;
   height: 104px;
   position: relative;
+  z-index: 3;
 
   .Repost{
     position: absolute;
@@ -451,6 +471,7 @@ const Content = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-all;
+  z-index: 3;
 
   .boxName {
     display: flex;
