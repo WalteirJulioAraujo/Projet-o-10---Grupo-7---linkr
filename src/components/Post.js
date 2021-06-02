@@ -12,6 +12,7 @@ import { FaPencilAlt } from "react-icons/fa";
 
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
+import Repost from "./Repost"
 
 import UserContext from "../contexts/UserContext";
 
@@ -90,7 +91,7 @@ export default function Post({
       );
     });
   }
-
+  
   function toggleLike() {
     const config = {
       headers: {
@@ -137,7 +138,6 @@ export default function Post({
       closeOnClickOutside: false,
     });
   }
-
 
   function ShowEdit() {
     if (controler) {
@@ -198,8 +198,28 @@ export default function Post({
   if(post.link){
     srcYoutube = "https://www.youtube.com/embed/"+getId(post.link)+"?mute=1"
   }
- 
+  
+  function RepostPost(){
+    console.log("oi");
+  }
 
+  function ConfirmRepost(){
+    console.log("confirm")
+    confirmAlert({
+      message: "Tem certeza que deseja repostar essa publicação?",
+      buttons: [
+        {
+          label: "Sim",
+          onClick: () => RepostPost(),
+          className: "yes",
+        },
+        {
+          label: "Não, voltar",
+        },
+      ],
+      closeOnClickOutside: false,
+    });
+  }
 
   return (
     <PostContainer key={postUser.id}>
@@ -268,6 +288,10 @@ export default function Post({
             </p>
           </Tooltip>
         </div>
+        <div className="Repost"> 
+          <Repost ConfirmRepost={ConfirmRepost} />
+        </div>
+
       </Profile>
       <Content>
         <div class='boxName'>
@@ -377,6 +401,14 @@ const Profile = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 104px;
+  position: relative;
+
+  .Repost{
+    position: absolute;
+    top:120px;
+    left:10px;
+    color:white;
+  }
 
   img {
     border-radius: 50%;
