@@ -209,15 +209,16 @@ export default function Post({
   }
 
 
-  function ViewLocation(){console.log(post.geolocation.latitude);
+  function ViewLocation(){
+    console.log(post.geolocation.latitude);
     if(post.geolocation){
-      const postLocation = {
+      setLocationOfPost({
         latitude: post.geolocation.latitude,
         longitude: post.geolocation.longitude
-      }
-      setLocationOfPost(postLocation);
-      return(<>
-      <img src={"oi"} alt={"maps"}/></>);
+      });
+
+      
+      return(<></>);
     }
     
     
