@@ -1,3 +1,4 @@
+
 import { useState, useContext, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
@@ -9,6 +10,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
+import {FaMapMarkerAlt} from "react-icons/fa";
 
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
@@ -16,6 +18,7 @@ import Comments from './Comments';
 import { AiOutlineComment } from 'react-icons/ai';
 
 import UserContext from "../contexts/UserContext";
+import ModalMap from "./ModalMap";
 
 export default function Post({
   post,
@@ -37,7 +40,9 @@ export default function Post({
   const inputRefText = useRef(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [showComments, setShowComments] = useState(false)
+  const [showComments, setShowComments] = useState(false);
+  const [locationOfPost, setLocationOfPost] = useState({});
+  const[openMaps, setOpenMaps] = useState(false);
 
   useEffect(() => {
     likes.some(
@@ -173,8 +178,9 @@ export default function Post({
     );
    
     request.then((response) => {
-      setIsEdit(true);
       setControler(false);
+      setIsEdit(true);
+      setEditText(response.data.post.text);
     });
 
     request.catch(() => {
@@ -204,6 +210,10 @@ export default function Post({
     setShowComments(!showComments)
   }
 
+  function ViewLocation(){
+    setOpenMaps(true);
+    }
+    
   return (
     <>
     <PostContainer key={postUser.id}>
@@ -279,9 +289,14 @@ export default function Post({
       </Profile>
       <Content>
         <div class='boxName'>
-          <Link to={`/user/${postUser.id}`}>
+          <div>
+            <Link to={`/user/${postUser.id}`}>
             <h2>{postUser.username}</h2>
-          </Link>
+            </Link>
+            {post.geolocation ? <FaMapMarkerAlt className='map-icon' onClick={ViewLocation}/>
+            : ""}
+            {openMaps? <ModalMap  openMaps={openMaps} setOpenMaps={setOpenMaps} post={post}/> : ""}
+          </div>
           <div class='icons'>
             {post.user.id === localstorage.user.id ? (
               <FaPencilAlt onClick={ShowEdit} className='pencil-icon' />
@@ -380,6 +395,12 @@ const PostContainer = styled.div`
     border-radius: 0;
     padding: 9px 18px 15px 15px;
     height: 232px;
+  }
+
+  .map-icon{
+    color:white;
+    margin-left:10px;
+    font-size:16px;
   }
 `;
 
@@ -645,3 +666,6 @@ const Tooltip = styled(Tippy)`
     color: #ebebeb !important;
   }
 `;
+
+
+
