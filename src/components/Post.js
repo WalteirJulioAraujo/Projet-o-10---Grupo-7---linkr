@@ -1,4 +1,3 @@
-
 import { useState, useContext, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
@@ -18,6 +17,7 @@ import Comments from './Comments';
 import { AiOutlineComment } from 'react-icons/ai';
 
 import UserContext from "../contexts/UserContext";
+import ModalMap from "./ModalMap";
 
 export default function Post({
   post,
@@ -41,6 +41,7 @@ export default function Post({
   const [isEdit, setIsEdit] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [locationOfPost, setLocationOfPost] = useState({});
+  const[openMaps, setOpenMaps] = useState(false);
 
   useEffect(() => {
     likes.some(
@@ -208,20 +209,10 @@ export default function Post({
     setShowComments(!showComments)
   }
 
-
-  function ViewLocation(){console.log(post.geolocation.latitude);
-    if(post.geolocation){
-      const postLocation = {
-        latitude: post.geolocation.latitude,
-        longitude: post.geolocation.longitude
-      }
-      setLocationOfPost(postLocation);
-      return(<>
-      <img src={"oi"} alt={"maps"}/></>);
+  function ViewLocation(){
+    setOpenMaps(true);
     }
     
-    
-  }
   return (
     <>
     <PostContainer key={postUser.id}>
@@ -301,7 +292,9 @@ export default function Post({
             <Link to={`/user/${postUser.id}`}>
             <h2>{postUser.username}</h2>
             </Link>
-            {post.geolocation ? <FaMapMarkerAlt className='map-icon' onClick={ViewLocation}/> : ""}
+            {post.geolocation ? <FaMapMarkerAlt className='map-icon' onClick={ViewLocation}/>
+            : ""}
+            {openMaps? <ModalMap  openMaps={openMaps} setOpenMaps={setOpenMaps} post={post}/> : ""}
           </div>
           <div class='icons'>
             {post.user.id === localstorage.user.id ? (
@@ -371,7 +364,6 @@ export default function Post({
 const YoutubePlayer = styled.div`
   display: flex;
   flex-direction: column;
-
   iframe{
     margin-top: 8px;
     margin-bottom: 8px;
@@ -402,7 +394,6 @@ const PostContainer = styled.div`
     padding: 9px 18px 15px 15px;
     height: 232px;
   }
-
   .map-icon{
     color:white;
     margin-left:10px;
@@ -416,7 +407,6 @@ const Profile = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 150px;
-
   img {
     border-radius: 50%;
     width: 50px;
@@ -433,7 +423,6 @@ const Profile = styled.div`
     justify-content: space-between;
     height: 32px;
   }
-
   @media (max-width: 611px) {
     height: 130px;
     img {
@@ -461,17 +450,14 @@ const Content = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-all;
-
   .boxName {
     display: flex;
     justify-content: space-between;
     width: 502px;
-
     @media (max-width: 611px) {
       width: 100%;
     }
   }
-
   .pencil-icon {
     color: #ffffff;
     width: 14px;
@@ -479,7 +465,6 @@ const Content = styled.div`
     cursor: pointer;
     margin-left: 15px;
   }
-
   > h2 {
     color: #fff;
     font-size: 19px;
@@ -492,12 +477,10 @@ const Content = styled.div`
     margin-top: 19px;
     margin-bottom: 14px;
   }
-
   div {
     color: white;
     display: flex;
   }
-
   input {
     width: 100%;
     height: 60px;
@@ -509,7 +492,6 @@ const Content = styled.div`
     overflow-wrap: break-word;
     color: #4c4c4c;
   }
-
   @media (max-width: 611px) {
     width: 82%;
     > h2 {
@@ -554,7 +536,6 @@ const LinkSnippet = styled.a`
   height: 155px;
   display: flex;
   justify-content: space-between;
-
   img {
     border-top-right-radius: 11px;
     border-bottom-right-radius: 11px;
@@ -658,20 +639,14 @@ const Tooltip = styled(Tippy)`
   line-height: 14px !important;
   color: #505050 !important;
   display: flex !important;
-
   span {
     width: 100%;
     display: flex;
   }
-
   p {
     color: #505050 !important;
   }
-
   .tippy-arrow {
     color: #ebebeb !important;
   }
 `;
-
-
-
