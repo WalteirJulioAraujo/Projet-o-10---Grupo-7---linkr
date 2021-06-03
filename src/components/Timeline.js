@@ -30,6 +30,7 @@ export default function Timeline(){
         const request = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/users/follows', config)
 
         request.then( response => {
+            console.log(response.data.users)
             setUser(localStorage.user);
             const following = response.data.users;
             setFollowingUsers(following);
@@ -50,6 +51,7 @@ export default function Timeline(){
         const request = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/following/posts', config)
 
         request.then( response => {
+            console.log(response.data);
             const data = response.data.posts
             setPosts([...response.data.posts])
             setIsLoading(false)
@@ -81,7 +83,7 @@ export default function Timeline(){
                                 key={post.id} id={post.id} post={post} 
                                 postUser={post.user} likes={post.likes}
                                 reloadingPosts={loadingPosts}
-                                location={location}
+                                location={location} 
 
                             />)
                         }

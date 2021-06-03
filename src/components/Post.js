@@ -36,7 +36,8 @@ export default function Post({
   const [isEdit, setIsEdit] = useState(false);
   const [isRepost, setIsRepost] = useState(false);
  
-
+  
+  console.log(id)
   useEffect(() => {
     likes.some(
       (like) =>
@@ -198,13 +199,35 @@ export default function Post({
   }
   
   function RepostPost(){
-    console.log("oi");
+    console.log("oi",id);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    };
+    const request = axios.post(
+      `https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${id}/share`,
+      {},
+      config
+    );
 
+    request.then((response) => {
+    console.log(response.data);
+    reloadingPosts();
+    });
+    request.catch(() => {
+      alert("Houve um erro ao publicar seu link");
+      
+    });
+  
     //post normla mais a barra de cima com informação, vamos precisar componentizar.
     return(<>
     
     </>);
   }
+
+
+ 
 
   function ConfirmRepost(){
     console.log("confirm")
@@ -227,7 +250,7 @@ export default function Post({
   return (<>
     
     <PostContainer key={postUser.id}>
-     <RepostBar>Repost bar</RepostBar> 
+     {/* <RepostBar>Repost bar</RepostBar>  */}
      <Profile>
         <Link to={`/user/${postUser.id}`}>
           <img src={postUser.avatar} alt={`${postUser.username}' profile`} />
@@ -366,18 +389,18 @@ export default function Post({
     </>
   );
 }
-const RepostBar = styled.div`
-position: absolute;
-z-index: -1;
-background-color: gray;
-width: 611px;
-height: 40px;
-bottom: 405px;
-left:0px;
-background: #1E1E1E;
-border-radius: 16px;
-color: white;
-`;
+// const RepostBar = styled.div`
+// position: absolute;
+// z-index: -1;
+// background-color: gray;
+// width: 611px;
+// height: 40px;
+// bottom: 405px;
+// left:0px;
+// background: #1E1E1E;
+// border-radius: 16px;
+// color: white;
+// `;
 const YoutubePlayer = styled.div`
   display: flex;
   flex-direction: column;
@@ -406,7 +429,7 @@ const PostContainer = styled.div`
   padding: 18px 18px 20px 21px;
   background: #171717;
   border-radius: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 30px;
   @media (max-width: 611px) {
     border-radius: 0;
     padding: 9px 18px 15px 15px;
