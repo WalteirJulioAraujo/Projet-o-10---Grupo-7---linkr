@@ -18,6 +18,7 @@ import Comments from './Comments';
 import { AiOutlineComment } from 'react-icons/ai';
 
 import UserContext from "../contexts/UserContext";
+import ModalMaps from "./ModalMaps";
 
 export default function Post({
   post,
@@ -41,6 +42,7 @@ export default function Post({
   const [isEdit, setIsEdit] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [locationOfPost, setLocationOfPost] = useState({});
+  const[openMaps, letOpenMaps] = useState(false);
 
   useEffect(() => {
     likes.some(
@@ -209,19 +211,15 @@ export default function Post({
   }
 
 
-  function ViewLocation(){console.log(post.geolocation.latitude);
-    if(post.geolocation){
-      const postLocation = {
-        latitude: post.geolocation.latitude,
-        longitude: post.geolocation.longitude
-      }
-      setLocationOfPost(postLocation);
+  function ViewLocation(){
+    console.log(post.geolocation.latitude);
+    setOpenMaps(true);
       return(<>
-      <img src={"oi"} alt={"maps"}/></>);
+      <ModalMaps  openMaps={openMaps} post={post}/>
+      </>);
     }
     
-    
-  }
+  
   return (
     <>
     <PostContainer key={postUser.id}>
