@@ -11,7 +11,9 @@ import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
-import Repost from "./Repost"
+import Comments from './Comments';
+import { AiOutlineComment } from 'react-icons/ai';
+
 import UserContext from "../contexts/UserContext";
 
 export default function Post({
@@ -34,10 +36,8 @@ export default function Post({
   const inputRefText = useRef(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isRepost, setIsRepost] = useState(false);
- 
-  
-  console.log(id)
+  const [showComments, setShowComments] = useState(false);
+
   useEffect(() => {
     likes.some(
       (like) =>
@@ -228,27 +228,12 @@ export default function Post({
 
 
  
-
-  function ConfirmRepost(){
-    console.log("confirm")
-    confirmAlert({
-      message: "Tem certeza que deseja repostar essa publicação?",
-      buttons: [
-        {
-          label: "Sim",
-          onClick: () => RepostPost(),
-          className: "yes",
-        },
-        {
-          label: "Não, voltar",
-        },
-      ],
-      closeOnClickOutside: false,
-    });
+  function toggleComments() {
+    setShowComments(!showComments)
   }
 
-  return (<>
-    
+  return (
+    <>
     <PostContainer key={postUser.id}>
      {/* <RepostBar>Repost bar</RepostBar>  */}
      <Profile>
@@ -316,10 +301,10 @@ export default function Post({
             </p>
           </Tooltip>
         </div>
-        <div className="Repost"> 
-          <Repost ConfirmRepost={ConfirmRepost} />
+        <div>
+          <CommentIcon onClick={toggleComments}/>
+          <p>{post.commentCount} comments</p>
         </div>
-
       </Profile>
       <Content>
         <div class='boxName'>
@@ -386,6 +371,7 @@ export default function Post({
          }  
       </Content>
     </PostContainer>
+    {showComments ? <Comments id={id} postUser={post.user} /> : null}
     </>
   );
 }
@@ -428,8 +414,10 @@ const PostContainer = styled.div`
   font-weight: 400;
   padding: 18px 18px 20px 21px;
   background: #171717;
+  margin-bottom: 16px;
   border-radius: 16px;
-  margin-bottom: 30px;
+  position: relative;
+  z-index:0;
   @media (max-width: 611px) {
     border-radius: 0;
     padding: 9px 18px 15px 15px;
@@ -442,16 +430,7 @@ const Profile = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  height: 104px;
-  position: relative;
-  z-index: 3;
-
-  .Repost{
-    position: absolute;
-    top:120px;
-    left:10px;
-    color:white;
-  }
+  height: 150px;
 
   img {
     border-radius: 50%;
@@ -467,17 +446,20 @@ const Profile = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: 35px;
+    height: 32px;
   }
 
   @media (max-width: 611px) {
-    height: 97px;
+    height: 130px;
     img {
       width: 40px;
       height: 40px;
     }
     p {
       font-size: 9px;
+    }
+    >div{
+      height:28px;
     }
   }
 `;
@@ -678,6 +660,12 @@ const Hashtag = styled.span`
   font-size: 19px;
   line-height: 23px;
 `;
+
+const CommentIcon = styled(AiOutlineComment)`
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+`
 
 const Tooltip = styled(Tippy)`
   background: #ebebeb !important;

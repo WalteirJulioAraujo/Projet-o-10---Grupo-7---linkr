@@ -162,6 +162,7 @@ export default function User() {
                         {userPosts.map((post) => (
                             <Post
                                 key={post.id}
+                                id={post.id}
                                 post={post}
                                 postUser={post.user}
                                 likes={post.likes}

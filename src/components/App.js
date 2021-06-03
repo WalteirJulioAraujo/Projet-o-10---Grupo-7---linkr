@@ -11,13 +11,12 @@ import User from './User';
 
 import UserContext from "../contexts/UserContext"
 
-
 export default function App(){
 
     const [ user, setUser ] = useState(undefined);
-
+    const [ followingUsers, setFollowingUsers] = useState([])
     return (
-        <UserContext.Provider value={{user, setUser}}>
+        <UserContext.Provider value={{user, setUser, followingUsers, setFollowingUsers}}>
             <GlobalStyle />
             <BrowserRouter>
                 <Switch>

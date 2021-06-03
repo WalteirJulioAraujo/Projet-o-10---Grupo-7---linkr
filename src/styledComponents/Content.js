@@ -121,15 +121,30 @@ export const Load = styled.div`
   text-align: center;
   color: #6d6d6d;
   font-size: 36px;
-  padding-top: 100px;
+  padding-top: 35px;
 
   div {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    color: #6D6D6D;
+    font-size: 30px;
+    padding-top: 30px;
   }
-  @media (max-width: 611px) {
-    font-size: 25px;
-  }
+    img{
+        height: 100px;
+        width: 100px;
+    }
+
+    div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    @media (max-width: 611px){
+        font-size: 25px;
+}
 `;
