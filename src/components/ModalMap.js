@@ -58,7 +58,6 @@ const ContainerModal = styled.div`
     width: 100%;
 
     p {
-      position: relative;
       color: #fff;
       font-size: 32px;
       font-weight: bold;
@@ -92,7 +91,7 @@ const Map = styled.div`
   p {
     z-index: 3;
     position: absolute;
-    top: 90px;
+    top: 10px;
     left: 300px;
   }
 
@@ -118,7 +117,7 @@ const Map = styled.div`
     p {
       z-index: 3;
       position: absolute;
-      top: 80px;
+      top: calc((100% - 36px)/2);
       left: 65px;
     }
   }
