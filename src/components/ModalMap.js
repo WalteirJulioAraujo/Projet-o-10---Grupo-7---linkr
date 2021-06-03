@@ -118,7 +118,7 @@ const Map = styled.div`
       z-index: 3;
       position: absolute;
       top: calc((100% - 36px)/2);
-      left: 65px;
+      left: calc((100% - 36px)/2);
     }
   }
 
