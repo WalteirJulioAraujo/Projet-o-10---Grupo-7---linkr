@@ -5,6 +5,7 @@ import { IoMdClose } from "react-icons/io";
 export default function ModalMap({ openMaps, setOpenMaps, post }) {
   const { geolocation } = post;
   function closeMaps() {
+    
     setOpenMaps(false);
   }
 
