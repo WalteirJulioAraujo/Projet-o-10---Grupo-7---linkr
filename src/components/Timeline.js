@@ -53,6 +53,7 @@ export default function Timeline(){
             } else if (posts.length === 0 && followingUsers.length === 0) {
                 setAfterLoading(<Load>Você não segue ninguém ainda, procure por perfis na busca</Load>)
             } 
+            console.log(response.data);
         })
 
         request.catch( () => {setIsError(true); setIsLoading(false)});

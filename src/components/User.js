@@ -180,16 +180,29 @@ export default function User() {
 
 const TitleContainer = styled.div`
     align-items: center !important;
+
+    @media (max-width: 611px) {
+        margin: 0 17px;
+    }
 `;
 const Title = styled.div`
     display: flex;
     justify-content: flex-start !important;
     align-items: center !important;
+
     img {
         border-radius: 50%;
         width: 50px;
         height: 50px;
         margin-right: 18px;
+    }
+
+    @media (max-width: 611px){
+        width: 80%;
+
+        img {
+           display: none;
+        }
     }
 `;
 const Button = styled.button`
@@ -204,5 +217,13 @@ const Button = styled.button`
 
     &:hover{
         cursor:pointer;
+    }
+
+    @media (max-width: 611px) {
+        width: 20%;
+        height: 112px;
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+        font-size: 12px;
     }
 `;
