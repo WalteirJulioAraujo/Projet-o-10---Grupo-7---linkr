@@ -18,7 +18,7 @@ import Comments from './Comments';
 import { AiOutlineComment } from 'react-icons/ai';
 
 import UserContext from "../contexts/UserContext";
-import ModalMaps from "./ModalMaps";
+import ModalMap from "./ModalMap";
 
 export default function Post({
   post,
@@ -42,7 +42,7 @@ export default function Post({
   const [isEdit, setIsEdit] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [locationOfPost, setLocationOfPost] = useState({});
-  const[openMaps, letOpenMaps] = useState(false);
+  const[openMaps, setOpenMaps] = useState(false);
 
   useEffect(() => {
     likes.some(
@@ -210,16 +210,10 @@ export default function Post({
     setShowComments(!showComments)
   }
 
-
   function ViewLocation(){
-    console.log(post.geolocation.latitude);
     setOpenMaps(true);
-      return(<>
-      <ModalMaps  openMaps={openMaps} post={post}/>
-      </>);
     }
     
-  
   return (
     <>
     <PostContainer key={postUser.id}>
@@ -299,7 +293,9 @@ export default function Post({
             <Link to={`/user/${postUser.id}`}>
             <h2>{postUser.username}</h2>
             </Link>
-            {post.geolocation ? <FaMapMarkerAlt className='map-icon' onClick={ViewLocation}/> : ""}
+            {post.geolocation ? <FaMapMarkerAlt className='map-icon' onClick={ViewLocation}/>
+            : ""}
+            {openMaps? <ModalMap  openMaps={openMaps} setOpenMaps={setOpenMaps} post={post}/> : ""}
           </div>
           <div class='icons'>
             {post.user.id === localstorage.user.id ? (
