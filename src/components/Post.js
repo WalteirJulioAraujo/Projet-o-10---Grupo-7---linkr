@@ -1,3 +1,4 @@
+
 import { useState, useContext, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
@@ -9,6 +10,8 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
+import {FaMapMarkerAlt} from "react-icons/fa";
+
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
 import Comments from './Comments';
@@ -37,6 +40,7 @@ export default function Post({
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [locationOfPost, setLocationOfPost] = useState({});
 
   useEffect(() => {
     likes.some(
@@ -90,7 +94,7 @@ export default function Post({
       );
     });
   }
-  
+
   function toggleLike() {
     const config = {
       headers: {
@@ -138,6 +142,7 @@ export default function Post({
     });
   }
 
+
   function ShowEdit() {
     if (controler) {
       setControler(false);
@@ -171,8 +176,9 @@ export default function Post({
     );
    
     request.then((response) => {
-      setIsEdit(true);
       setControler(false);
+      setIsEdit(true);
+      setEditText(response.data.post.text);
     });
 
     request.catch(() => {
@@ -197,46 +203,29 @@ export default function Post({
   if(post.link){
     srcYoutube = "https://www.youtube.com/embed/"+getId(post.link)+"?mute=1"
   }
-  
-  function RepostPost(){
-    console.log("oi",id);
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-    };
-    const request = axios.post(
-      `https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${id}/share`,
-      {},
-      config
-    );
-
-    request.then((response) => {
-    console.log(response.data);
-    reloadingPosts();
-    });
-    request.catch(() => {
-      alert("Houve um erro ao publicar seu link");
-      
-    });
-  
-    //post normla mais a barra de cima com informação, vamos precisar componentizar.
-    return(<>
-    
-    </>);
-  }
-
-
  
   function toggleComments() {
     setShowComments(!showComments)
   }
 
+
+  function ViewLocation(){console.log(post.geolocation.latitude);
+    if(post.geolocation){
+      const postLocation = {
+        latitude: post.geolocation.latitude,
+        longitude: post.geolocation.longitude
+      }
+      setLocationOfPost(postLocation);
+      return(<>
+      <img src={"oi"} alt={"maps"}/></>);
+    }
+    
+    
+  }
   return (
     <>
     <PostContainer key={postUser.id}>
-     {/* <RepostBar>Repost bar</RepostBar>  */}
-     <Profile>
+      <Profile>
         <Link to={`/user/${postUser.id}`}>
           <img src={postUser.avatar} alt={`${postUser.username}' profile`} />
         </Link>
@@ -308,9 +297,12 @@ export default function Post({
       </Profile>
       <Content>
         <div class='boxName'>
-          <Link to={`/user/${postUser.id}`}>
+          <div>
+            <Link to={`/user/${postUser.id}`}>
             <h2>{postUser.username}</h2>
-          </Link>
+            </Link>
+            {post.geolocation ? <FaMapMarkerAlt className='map-icon' onClick={ViewLocation}/> : ""}
+          </div>
           <div class='icons'>
             {post.user.id === localstorage.user.id ? (
               <FaPencilAlt onClick={ShowEdit} className='pencil-icon' />
@@ -375,18 +367,7 @@ export default function Post({
     </>
   );
 }
-// const RepostBar = styled.div`
-// position: absolute;
-// z-index: -1;
-// background-color: gray;
-// width: 611px;
-// height: 40px;
-// bottom: 405px;
-// left:0px;
-// background: #1E1E1E;
-// border-radius: 16px;
-// color: white;
-// `;
+
 const YoutubePlayer = styled.div`
   display: flex;
   flex-direction: column;
@@ -406,11 +387,9 @@ const YoutubePlayer = styled.div`
 
 const PostContainer = styled.div`
   display: flex;
-  position: relative;
   justify-content: space-between;
   //height: 276px;
   width: 100%;
-  z-index: 3;
   font-weight: 400;
   padding: 18px 18px 20px 21px;
   background: #171717;
@@ -422,6 +401,12 @@ const PostContainer = styled.div`
     border-radius: 0;
     padding: 9px 18px 15px 15px;
     height: 232px;
+  }
+
+  .map-icon{
+    color:white;
+    margin-left:10px;
+    font-size:16px;
   }
 `;
 
@@ -476,7 +461,6 @@ const Content = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-all;
-  z-index: 3;
 
   .boxName {
     display: flex;
@@ -688,3 +672,6 @@ const Tooltip = styled(Tippy)`
     color: #ebebeb !important;
   }
 `;
+
+
+

@@ -2,13 +2,15 @@ import styled from "styled-components";
 import { useContext, useState} from "react";
 import axios from "axios";
 import Usercontext from "../contexts/UserContext";
-
+import { BiMap } from "react-icons/bi";
 
 export default function CreatePosts({loadingPosts}) {
   const [link, setLink] = useState("");
   const [text, setText] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
+  const [enableLocation, setEnableLocation] = useState(false);
   const {user, setUser} = useContext(Usercontext);
+  const [location, setLocation] = useState("");
   const localstorage = JSON.parse(localStorage.user);
   const token = localstorage.token;
   const image = localstorage.user.avatar;
@@ -21,32 +23,63 @@ export default function CreatePosts({loadingPosts}) {
     } else {
       const body = {
         text,
-	      link
+	      link,
+        geolocation: location
       };
       const config = {
         headers: {
           Authorization: `Bearer ${token}`
         },
       };
-      const request = axios.post(
-        "https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts",
-        body,
-        config
-      );
       setIsDisabled(true);
+      const request = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts", body, config);
       request.then((response) => {
         setUser(localStorage.user);
-         setIsDisabled(false);
-         setLink("");
-         setText("");
-         loadingPosts();
+        setIsDisabled(false);
+        setLink("");
+        setText("");
+        loadingPosts();
       });
       request.catch(() => {
         alert("Houve um erro ao publicar seu link");
         setIsDisabled(false);
       });
     }
-  } 
+  };
+
+  function showLocation(position) {
+    if(enableLocation === false) {
+      setEnableLocation(true);
+      const geolocation= {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        }      
+      setLocation(geolocation);
+    } else {
+      setEnableLocation(false);
+    }
+  }; 
+
+  function errorHandler(err) {
+      if(err.code === 1) {
+        alert("Erro: Acesso bloqueado à sua localização!");
+        setEnableLocation(false);
+      } else if( err.code === 2) {
+        alert("Erro: Posição geográfica não disponível");
+        setEnableLocation(false);
+      }
+  };
+
+  function getLocation() {
+    if(navigator.geolocation) {        
+        let options = {timeout:60000};
+        navigator.geolocation.getCurrentPosition(showLocation, errorHandler, options);
+    } else {
+        alert("Desculpe, o dispositivo não pode obter sua localização");
+        setEnableLocation(false);
+    }
+  };
+
   return (
     <Post>
       <Photo image={image}></Photo>
@@ -68,27 +101,47 @@ export default function CreatePosts({loadingPosts}) {
             placeholder='O que você tem a dizer sobre isso?'
             isDisabled={isDisabled}
             required
-            maxlength="185">
-              
+            maxlength="185">              
             </StyledinputText>
-          <Button 
-          isDisabled={isDisabled}
-          onClick={
-               isDisabled
-                 ? ""
-                 : 
-                    (event) => Submit(event)
-            }>
-            <span> {isDisabled ? (
-                "Publicando"
-              ) : (
-                "Publicar"
-              )}</span>
-          </Button>
+            <Localization color={enableLocation} onClick={getLocation}>
+              <BiMap className="map-icon"/>
+              <p>{enableLocation ? "Localização ativada" : "Localização desativada"}</p>
+            </Localization>
+            <Button 
+            isDisabled={isDisabled}
+            onClick={
+                isDisabled
+                  ? ""
+                  : 
+                      (event) => Submit(event)
+              }>
+              <span> {isDisabled ? (
+                  "Publicando"
+                ) : (
+                  "Publicar"
+                )}</span>
+            </Button>
         </Form>
     </Post>
   );
 }
+
+const Localization = styled.div`
+  width: 502px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: ${props => props.color ? "#238700" : "#949494"};
+  .map-icon {
+    font-size: 15px;
+  }
+  p {
+    font-size: 13px;
+    margin-left: 5px;
+  }
+`;
+
 const Post = styled.div`
   width: 611px;
   height: 209px;
@@ -174,7 +227,7 @@ const StyledinputText = styled.input`
   padding-left: 10px;
   border: none;
   outline-color: transparent;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   font-weight: 300;
   display: flex;
   justify-content: start;
@@ -189,7 +242,7 @@ const Button = styled.button`
   width: 112px;
   height: 31px;
   left: 480px;
-  top: 160px;
+  top: 161px;
   background: #1877f2;
   border-radius: 5px;
   outline-color: transparent;

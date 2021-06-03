@@ -76,7 +76,7 @@ export default function Timeline(){
                                 key={post.id} id={post.id} post={post} 
                                 postUser={post.user} likes={post.likes}
                                 reloadingPosts={loadingPosts}
-                                location={location} 
+                                location={location}
 
                             />)
                         }
