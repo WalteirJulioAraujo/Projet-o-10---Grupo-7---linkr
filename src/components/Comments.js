@@ -146,12 +146,14 @@ const CommentsContainer = styled.div`
 
 `
 const SeeMore = styled.div`
+    width: 100%;
     display: flex;
     justify-content: center;
     button {
+        padding: 3px 0;
         margin-top: 5px;
         border-radius: 9px;
-        width: 70px;
+        width: 90px;
         background: #252525;
         color: #FFF;
         border: 1px solid #FFF;

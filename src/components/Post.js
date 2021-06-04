@@ -221,30 +221,8 @@ export default function Post({
     setOpenMaps(true);
     }
     
-    function DoYouWannaRepost(){
-      confirmAlert({
-        message: "Você deseja repostar esse link?",
-        buttons: [
-          {
-            label: "Sim, compartilhar!",
-            onClick: () => Repost(),
-            className: "yesShare",
-          },
-          {
-            label: "Não, voltar",
-          },
-        ],
-        closeOnClickOutside: false,
-      });
-    }
-  
-    function Repost(){
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-      const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${post.id}/share`,{},config);
-      
-    }
+    request.then(reloadingPosts)
+  }
 
   return (
     <>
@@ -405,7 +383,7 @@ export default function Post({
     {showComments ? <Comments id={id} postUser={post.user} /> : null}
     </>
   );
-}
+
 
 const RepostContainer = styled.div`
   height: 44px;

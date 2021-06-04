@@ -32,6 +32,7 @@ export default function Timeline(){
 
     function checkFollowingUsers() {
         setIsLoading(true)
+        setHasMorePosts(false)
         const request = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/users/follows', config)
 
         request.then((response) => {
@@ -89,7 +90,9 @@ export default function Timeline(){
         
         request.then( response => {
             if(response.data.posts !== undefined){
-                setPosts([...response.data.posts, ...posts]);
+                const datas = response.data.posts
+                const newData = datas.filter( data => data.id !== posts[0].id)
+                setPosts([...newData, ...posts]);
             } 
         })
         request.catch( () => {setIsError(true); setIsLoading(false); setHasMorePosts(false)})

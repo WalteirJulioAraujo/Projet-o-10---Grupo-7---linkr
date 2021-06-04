@@ -86,7 +86,7 @@ const Input = styled.input`
     color: #FFF;
   }
   :focus{
-    outline-color: transparent;
+    outline: 0;
     border: 0 none;
   }
     color: #FFF; 
