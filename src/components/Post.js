@@ -12,8 +12,8 @@ import { FaPencilAlt } from "react-icons/fa";
 
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
-import Comments from './Comments';
-import { AiOutlineComment } from 'react-icons/ai';
+import Comments from "./Comments";
+import { AiOutlineComment } from "react-icons/ai";
 
 import UserContext from "../contexts/UserContext";
 
@@ -37,7 +37,7 @@ export default function Post({
   const inputRefText = useRef(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [showComments, setShowComments] = useState(false)
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     likes.some(
@@ -151,9 +151,9 @@ export default function Post({
     if (controler) {
       inputRefText.current.focus();
       setIsEdit(false);
+    } else {
+      setEditText(post.text);
     }
-    else {setEditText(post.text);
-           }
   }, [controler]);
 
   function Edit(event) {
@@ -169,181 +169,184 @@ export default function Post({
       body,
       config
     );
-   
+
     request.then((response) => {
       setControler(false);
       setIsEdit(true);
-      setEditText(response.data.post.text)
-      
+      setEditText(response.data.post.text);
     });
 
     request.catch(() => {
-
       alert("Não foi possível salvar as alterações");
     });
   }
 
-
-  function keydowm(e){
+  function keydowm(e) {
     e.keyCode === 27 && setControler(false);
   }
 
   function getId(url) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
 
-    return (match && match[2].length === 11)
-      ? match[2]
-      : null;
+    return match && match[2].length === 11 ? match[2] : null;
   }
   let srcYoutube;
-  if(post.link){
-    srcYoutube = "https://www.youtube.com/embed/"+getId(post.link)+"?mute=1"
+  if (post.link) {
+    srcYoutube =
+      "https://www.youtube.com/embed/" + getId(post.link) + "?mute=1";
   }
- 
+
   function toggleComments() {
-    setShowComments(!showComments)
+    setShowComments(!showComments);
   }
 
   return (
     <>
-    <PostContainer key={postUser.id}>
-      <Profile>
-        <Link to={`/user/${postUser.id}`}>
-          <img src={postUser.avatar} alt={`${postUser.username}' profile`} />
-        </Link>
-        <div>
-          {like === 1 ? (
-            <HeartIconFill  className="button" onClick={toggleLike} />
-          ) : (
-            <HeartIconEmpty className="button"  onClick={toggleLike} />
-          )}
-          <Tooltip
-            content={
-              peopleThatLiked.length > 0 ? (
-                <span>
-                  {peopleThatLiked.map((name, i) => {
-                    if (i < 2) {
-                      if (i === 0)
-                        return (
-                          <p>{like === 1 ? "Você" : name["user.username"]}</p>
-                        );
-                      if (i === 1)
-                        return (
-                          <p>
-                            {peopleThatLiked.length === 2 ? `\u00A0 e ` : ","}{" "}
-                            {name["user.username"]}{" "}
-                          </p>
-                        );
-                    }
-                  })}
-                  <p>
-                    {" "}
-                    {"\u00A0"}
-                    {`${
-                      peopleThatLiked.length >= 4
-                        ? `e outras ${
-                            peopleThatLiked.length - 2
-                          } pessoas curtiram este post`
-                        : `${
-                            peopleThatLiked.length === 3
-                              ? `e mais uma pessoa curtiram este post`
-                              : `${
-                                  peopleThatLiked.length === 2
-                                    ? `curtiram este post`
-                                    : `${
-                                        peopleThatLiked.length === 1
-                                          ? `curtiu este post`
-                                          : ""
-                                      }`
-                                }`
-                          }`
-                    }`}
-                  </p>
-                </span>
-              ) : (
-                "Nenhuma curtida até o momento"
-              )
-            }
-            interactive={true}
-            placement='bottom'
-            arrow={true}>
-            <p>
-              {likeQuantity} {likeQuantity === 1 ? "like" : "likes"}
-            </p>
-          </Tooltip>
-        </div>
-        <div>
-          <CommentIcon className="button" onClick={toggleComments}/>
-          <p>{post.commentCount} comments</p>
-        </div>
-      </Profile>
-      <Content>
-        <div class='boxName'>
+      <PostContainer key={postUser.id}>
+        <Profile>
           <Link to={`/user/${postUser.id}`}>
-            <h2>{postUser.username}</h2>
+            <img src={postUser.avatar} alt={`${postUser.username}' profile`} />
           </Link>
-          <div class='icons'>
-            {post.user.id === localstorage.user.id ? (
-              <FaPencilAlt   onClick={ShowEdit} className='pencil-icon button' />
+          <div>
+            {like === 1 ? (
+              <HeartIconFill className='button' onClick={toggleLike} />
             ) : (
-              ""
+              <HeartIconEmpty className='button' onClick={toggleLike} />
             )}
-            {post.user.id === localstorage.user.id ? (
-              <FaTrashAlt
-                id={id}
-                className='trash-icon button'
-                onClick={moveToTrash}
-              />
-            ) : (
-              ""
-            )}{" "}
+            <Tooltip
+              content={
+                peopleThatLiked.length > 0 ? (
+                  <span>
+                    {peopleThatLiked.map((name, i) => {
+                      if (i < 2) {
+                        if (i === 0)
+                          return (
+                            <p>{like === 1 ? "Você" : name["user.username"]}</p>
+                          );
+                        if (i === 1)
+                          return (
+                            <p>
+                              {peopleThatLiked.length === 2 ? `\u00A0 e ` : ","}{" "}
+                              {name["user.username"]}{" "}
+                            </p>
+                          );
+                      }
+                    })}
+                    <p>
+                      {" "}
+                      {"\u00A0"}
+                      {`${
+                        peopleThatLiked.length >= 4
+                          ? `e outras ${
+                              peopleThatLiked.length - 2
+                            } pessoas curtiram este post`
+                          : `${
+                              peopleThatLiked.length === 3
+                                ? `e mais uma pessoa curtiram este post`
+                                : `${
+                                    peopleThatLiked.length === 2
+                                      ? `curtiram este post`
+                                      : `${
+                                          peopleThatLiked.length === 1
+                                            ? `curtiu este post`
+                                            : ""
+                                        }`
+                                  }`
+                            }`
+                      }`}
+                    </p>
+                  </span>
+                ) : (
+                  "Nenhuma curtida até o momento"
+                )
+              }
+              interactive={true}
+              placement='bottom'
+              arrow={true}>
+              <p>
+                {likeQuantity} {likeQuantity === 1 ? "like" : "likes"}
+              </p>
+            </Tooltip>
           </div>
-        </div>
-        {controler ? (
-          <form onSubmit={Edit}>
-            <input
-              type='text'
-              required
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              ref={inputRefText}
-              onKeyDown={(e) => keydowm(e)}
-            />
-          </form>
-        ) : (
-          <p>
-            <ReactHashtag
-              renderHashtag={(hashtagValue) => (
-                <Link to={`/hashtag/${hashtagValue}`.replace("#", "")}>
-                  <Hashtag>{hashtagValue}</Hashtag>
-                </Link>
-              )}>
-              {isEdit ? editText : post.text}
-              
-            </ReactHashtag>
-          </p>
-        )}
+          <div>
+            <CommentIcon className='button' onClick={toggleComments} />
+            <p>{post.commentCount} comments</p>
+          </div>
+        </Profile>
+        <Content>
+          <div class='boxName'>
+            <Link to={`/user/${postUser.id}`}>
+              <h2>{postUser.username}</h2>
+            </Link>
+            <div class='icons'>
+              {post.user.id === localstorage.user.id ? (
+                <FaPencilAlt
+                  onClick={ShowEdit}
+                  className='pencil-icon button'
+                />
+              ) : (
+                ""
+              )}
+              {post.user.id === localstorage.user.id ? (
+                <FaTrashAlt
+                  id={id}
+                  className='trash-icon button'
+                  onClick={moveToTrash}
+                />
+              ) : (
+                ""
+              )}{" "}
+            </div>
+          </div>
+          <div className='teste'>
+            {controler ? (
+              <form onSubmit={Edit}>
+                <input
+                  type='text'
+                  required
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  ref={inputRefText}
+                  onKeyDown={(e) => keydowm(e)}
+                />
+              </form>
+            ) : (
+              <p>
+                <ReactHashtag
+                  renderHashtag={(hashtagValue) => (
+                    <Link to={`/hashtag/${hashtagValue}`.replace("#", "")}>
+                      <Hashtag>{hashtagValue}</Hashtag>
+                    </Link>
+                  )}>
+                  {isEdit ? editText : post.text}
+                </ReactHashtag>
+              </p>
+            )}
+          </div>
 
-        {(post.link).includes("youtube.com/watch") || (post.link).includes("youtu.be/")
-        ? (<YoutubePlayer>
-            <iframe width="502" height="281" src={srcYoutube}></iframe>
-            <p>{post.link}</p>
-          </YoutubePlayer>)
-        : (<LinkSnippet href={post.link} target={"_blank"}>
-            <Text>
-              <h2>{post.linkTitle}</h2>
-              <p>{post.linkDescription}</p>
-              <div>
-                <p>{post.link}</p>
-              </div>
-            </Text>
-            <img src={post.linkImage} alt='website' />
-          </LinkSnippet>)
-         }  
-      </Content>
-    </PostContainer>
-    {showComments ? <Comments id={id} postUser={post.user} /> : null}
+          {post.link.includes("youtube.com/watch") ||
+          post.link.includes("youtu.be/") ? (
+            <YoutubePlayer>
+              <iframe width='502' height='281' src={srcYoutube}></iframe>
+              <p>{post.link}</p>
+            </YoutubePlayer>
+          ) : (
+            <LinkSnippet href={post.link} target={"_blank"}>
+              <Text>
+                <h2>{post.linkTitle}</h2>
+                <p>{post.linkDescription}</p>
+                <div>
+                  <p>{post.link}</p>
+                </div>
+              </Text>
+              <img src={post.linkImage} alt='website' />
+            </LinkSnippet>
+          )}
+        </Content>
+      </PostContainer>
+      {showComments ? <Comments id={id} postUser={post.user} /> : null}
     </>
   );
 }
@@ -352,18 +355,18 @@ const YoutubePlayer = styled.div`
   display: flex;
   flex-direction: column;
 
-  iframe{
+  iframe {
     margin-top: 8px;
     margin-bottom: 8px;
   }
   @media (max-width: 611px) {
+    width: 100%;
+    iframe {
       width: 100%;
-      iframe{
-        width:100%;
-        height:100%;
-      }
+      height: 100%;
     }
-`
+  }
+`;
 
 const PostContainer = styled.div`
   display: flex;
@@ -375,15 +378,14 @@ const PostContainer = styled.div`
   margin-bottom: 16px;
   border-radius: 16px;
   position: relative;
-  z-index:0;
+  z-index: 0;
 
-.button:focus,
-.button:hover {   
-  filter: brightness(700%);
-  animation: pulse 1s;
-  opacity: 0.8;
-
-}
+  .button:focus,
+  .button:hover {
+    filter: brightness(700%);
+    animation: pulse 1s;
+    opacity: 0.8;
+  }
   @media (max-width: 611px) {
     border-radius: 0;
     padding: 9px 18px 15px 15px;
@@ -424,8 +426,8 @@ const Profile = styled.div`
     p {
       font-size: 9px;
     }
-    >div{
-      height:28px;
+    > div {
+      height: 28px;
     }
   }
 `;
@@ -438,11 +440,34 @@ const Content = styled.div`
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-  white-space: nowrap;
-  overflow: hidden;
+  font-weight: bold;
   text-overflow: ellipsis;
-  word-break: break-all;
-
+  .teste {
+    width: 503px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 23px;
+    margin-bottom: 1.5px;
+    > h2 {
+      color: #fff;
+      font-size: 19px;
+      text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    }
+    > p {
+      font-size: 17px;
+      line-height: 23px;
+      color: #b7b7b7;
+      max-height: 70px;
+      margin-top: 19px;
+      margin-bottom: 14px;
+      text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    }
+  }
   .boxName {
     display: flex;
     justify-content: space-between;
@@ -466,7 +491,7 @@ const Content = styled.div`
     font-size: 19px;
   }
   > p {
-    font-size: 19px;
+    font-size: 17px;
     line-height: 23px;
     color: #b7b7b7;
     max-height: 70px;
@@ -480,15 +505,21 @@ const Content = styled.div`
   }
 
   input {
-    width: 100%;
-    height: 60px;
+    display: flex;
+    flex-wrap: wrap;
+    width: 503px;
+    height: 23px;
     border-radius: 7px;
-    font-size: 14px;
-    padding: 4px 9px;
-    outline: 1px solid black;
-    overflow-y: auto;
-    overflow-wrap: break-word;
+    padding: 0px 5px;
     color: #4c4c4c;
+    background-color: #ffff;
+    outline: none;
+    border: none;
+    margin-top: 19px;
+    margin-bottom: 14px;
+    font-weight: bold;
+    font-size: 17px;
+    line-height: 23px;
   }
 
   @media (max-width: 611px) {
@@ -558,17 +589,29 @@ const Text = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow-y: scroll;
+  //overflow-y: scroll;
   > h2 {
     font-size: 16px;
     color: #cecece;
     margin-bottom: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    //white-space: nowrap;
   }
+
+  /* display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden; */
+
   > p {
     color: #9b9595;
     font-size: 11px;
     line-height: 15px;
     margin-bottom: 15px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   > div {
     width: 100%;
@@ -577,9 +620,10 @@ const Text = styled.div`
     color: #cecece;
     font-size: 11px;
   }
-  @-moz-document url-prefix() { 
-    overflow:hidden;
-    p,h2{
+  @-moz-document url-prefix() {
+    overflow: hidden;
+    p,
+    h2 {
       word-break: break-word !important;
     }
   }
@@ -630,7 +674,7 @@ const CommentIcon = styled(AiOutlineComment)`
   font-size: 18px;
   color: #fff;
   cursor: pointer;
-`
+`;
 
 const Tooltip = styled(Tippy)`
   background: #ebebeb !important;

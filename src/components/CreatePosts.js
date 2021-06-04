@@ -107,7 +107,7 @@ export default function CreatePosts({loadingPosts}) {
               <BiMap className="map-icon"/>
               <p>{enableLocation ? "Localização ativada" : "Localização desativada"}</p>
             </Localization>
-            <Button 
+            <Button
             isDisabled={isDisabled}
             onClick={
                 isDisabled
@@ -115,7 +115,7 @@ export default function CreatePosts({loadingPosts}) {
                   : 
                       (event) => Submit(event)
               }>
-              <span> {isDisabled ? (
+            <span > {isDisabled ? (
                   "Publicando"
                 ) : (
                   "Publicar"
@@ -237,7 +237,9 @@ const StyledinputText = styled.input`
     width: 100%;
   }
 `;
+
 const Button = styled.button`
+  cursor:pointer;
   position: absolute;
   width: 112px;
   height: 31px;
@@ -257,4 +259,9 @@ const Button = styled.button`
     top: 130px;
     font-size: 13px;
   }
+
+&:hover {
+filter: brightness(110%);
+opacity: 0.8;
+}
 `;
