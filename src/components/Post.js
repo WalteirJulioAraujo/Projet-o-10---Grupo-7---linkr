@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-import ModalMap from './ModalMap'
 import styled from "styled-components";
 import ReactHashtag from "react-hashtag";
 import { FiHeart } from "react-icons/fi";
@@ -219,9 +218,9 @@ export default function Post({
 
   function ViewLocation(){
     setOpenMaps(true);
-    }
-    
     request.then(reloadingPosts)
+    
+
   }
 
   return (
@@ -383,7 +382,7 @@ export default function Post({
     {showComments ? <Comments id={id} postUser={post.user} /> : null}
     </>
   );
-
+          }
 
 const RepostContainer = styled.div`
   height: 44px;
