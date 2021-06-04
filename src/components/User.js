@@ -2,21 +2,23 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Posts, Trending, Load, PageTitle, ContainerModal, Modal } from "../styledComponents/Content";
-
+import InfiniteScroll from 'react-infinite-scroller';
 import styled from "styled-components";
 import Navbar from "./Navbar";
 import Usercontext from "../contexts/UserContext";
 import TrendingBar from "./TrendingBar";
 import Post from "./Post";
 import useInterval from 'react-useinterval';
+import loading from '../img/loading.svg'
 
 export default function User() {
     const { user, setUser } = useContext(Usercontext);
     const { id } = useParams();
     const [userPosts, setUserPosts] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isError, setIsError] = useState(false);
-    const [isEmpty, setIsEmpty] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
+    const [isError, setIsError] = useState(false)
+    const [afterLoading, setAfterLoading] = useState(null)
+    const [hasMorePosts, setHasMorePosts] = useState(false)
     const [followList, setFollowList] = useState([]);
     const [userInfo, setUserInfo] = useState(undefined);
     const [disabled, setDisabled] = useState(false);
@@ -49,14 +51,19 @@ export default function User() {
 
         request.then((response) => {
             setUser(localStorage.user);
-            const data = response.data.posts;
-            setUserPosts([...response.data.posts]);
+            const data = response.data.posts 
+            setUserPosts(response.data.posts)
+            setIsLoading(false)
+            setHasMorePosts(true) 
+            if(data.length === 0){
+                setAfterLoading(<Load>Nenhuma publicação encontrada</Load>)
+                return
+            } 
+        });
+
+        request.catch(() => {
+            setIsError(true);
             setIsLoading(false);
-            if (userPosts === data) {
-                setIsEmpty(true);
-            } else {
-                setIsEmpty(false);
-            }
         });
     }
 
@@ -113,7 +120,38 @@ export default function User() {
           window.open(link)
     }
 
-    useInterval(loadingPostsUser, 15000);
+    function updatePosts(){
+        setIsError(false)
+        const request = axios.get(`https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/users/${id}/posts?earlierThan=${userPosts[0].id}`,config)
+        
+        request.then( response => {
+            if(response.data.posts !== undefined){
+                setUserPosts([...response.data.posts, ...userPosts]);
+            } 
+        })
+        request.catch( () => {setIsError(true); setIsLoading(false); setHasMorePosts(false)})
+    }
+
+    function fetchPosts(){
+        if(userPosts.length > 200){
+            setHasMorePosts(false)
+            return
+        }
+
+        if(userPosts.length !== 0){
+            const request = axios.get(`https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/users/${id}/posts?olderThan=${userPosts[userPosts.length - 1].id}`, config)
+
+            request.then( response => {
+                if(response.data.posts.length < 10){
+                    setHasMorePosts(false)
+                } 
+                setTimeout(() => setUserPosts([...userPosts,...response.data.posts]),1000)
+            })
+
+            request.catch( () => {setIsError(true); setIsLoading(false); setHasMorePosts(false)})
+        }
+    }
+    useInterval(updatePosts, 15000);
     
     return (
 
@@ -122,7 +160,7 @@ export default function User() {
             <Container>
                 <PageTitle>
                     {!userInfo ? (
-                        "Loading"
+                        ""
                     ) : (
                         <>
                             <Title avatar={userInfo.avatar}>
@@ -158,20 +196,10 @@ export default function User() {
                 </PageTitle>
                 <div>
                     <Posts>
-                        {isLoading ? <Load>Loading</Load> : ""}
-                        {isError ? (
-                            <Load>
-                                Houve uma falha ao obter os posts, <br /> por
-                                favor atualize a página
-                            </Load>
-                        ) : (
-                            ""
-                        )}
-                        {isEmpty && !isLoading ? (
-                            <Load>Nenhum post encontrado</Load>
-                        ) : (
-                            ""
-                        )}
+                        { isLoading ? <Load><div><img src={loading} alt="Loading"/>Loading...</div></Load>  : ""}
+                        { isError ? <Load>Houve uma falha ao obter os posts, <br/> por favor atualize a página</Load> : ""}
+                        { userPosts === undefined || (userPosts.length === 0 && afterLoading === null) || userPosts.length !== 0 ? "" : afterLoading}
+                        <InfiniteScroll pageStart={0} loader={<Load><div><img src={loading}/>Loading more posts...</div></Load> } hasMore={hasMorePosts} loadMore={fetchPosts}>
                         {userPosts.map((post) => (
                             <Post
                                 key={post.id}
@@ -182,6 +210,7 @@ export default function User() {
                                 OpenModal={OpenModal}
                             />
                         ))}
+                        </InfiniteScroll>
                     </Posts>
                     <Trending>
                         <TrendingBar />

@@ -158,7 +158,12 @@ export const Load = styled.div`
         justify-content: center;
     }
     @media (max-width: 611px){
-        font-size: 25px;
+        font-size: 20px;
+        padding-top: 10px;
+        img{
+        height: 50px;
+        width: 50px;
+    }
 }
 `;
 

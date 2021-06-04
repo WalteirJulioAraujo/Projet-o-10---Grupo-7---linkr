@@ -1,10 +1,11 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
+import ModalMap from './ModalMap'
 import styled from "styled-components";
 import ReactHashtag from "react-hashtag";
 import { FiHeart } from "react-icons/fi";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart} from "react-icons/fa";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { FaTrash } from "react-icons/fa";
@@ -42,7 +43,7 @@ export default function Post({
   const inputRefText = useRef(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(false)
   const [locationOfPost, setLocationOfPost] = useState({});
   const[openMaps, setOpenMaps] = useState(false);
 
@@ -55,6 +56,9 @@ export default function Post({
       : setLike(0);
   }, []);
 
+  function ViewLocation(){
+    setOpenMaps(true);
+    };
 
   function likePost(config) {
     const request = axios.post(
@@ -258,9 +262,9 @@ export default function Post({
         </Link>
         <div>
           {like === 1 ? (
-            <HeartIconFill onClick={toggleLike} />
+            <HeartIconFill className="button" onClick={toggleLike} />
           ) : (
-            <HeartIconEmpty onClick={toggleLike} />
+            <HeartIconEmpty className="button" onClick={toggleLike} />
           )}
           <Tooltip
             content={
@@ -318,11 +322,11 @@ export default function Post({
           </Tooltip>
         </div>
         <div>
-          <CommentIcon onClick={toggleComments}/>
+          <CommentIcon className="button" onClick={toggleComments}/>
           <p>{post.commentCount} comments</p>
         </div>
         <div>
-          <RespostIcon onClick={DoYouWannaRepost}/>
+          <RespostIcon className="button" onClick={DoYouWannaRepost}/>
           <p>{post.repostCount} re-posts</p>
         </div>
       </Profile>
@@ -336,7 +340,7 @@ export default function Post({
             : ""}
             {openMaps? <ModalMap  openMaps={openMaps} setOpenMaps={setOpenMaps} post={post}/> : ""}
           </div>
-          <div class='icons'>
+          { post.hasOwnProperty('repostedBy') || <div class='icons'>
             {post.user.id === localstorage.user.id ? (
               <FaPencilAlt onClick={ShowEdit} className='pencil-icon' />
             ) : (
@@ -351,47 +355,51 @@ export default function Post({
             ) : (
               ""
             )}{" "}
-          </div>
+          </div>}
         </div>
-        {controler ? (
-          <form onSubmit={Edit}>
-            <input
-              type='text'
-              required
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              ref={inputRefText}
-              onKeyDown={(e) => keydowm(e)}
-            />
-          </form>
-        ) : (
-          <p>
-            <ReactHashtag
-              renderHashtag={(hashtagValue) => (
-                <Link to={`/hashtag/${hashtagValue}`.replace("#", "")}>
-                  <Hashtag>{hashtagValue}</Hashtag>
-                </Link>
-              )}>
-              {isEdit ? editText : post.text}
-            </ReactHashtag>
-          </p>
-        )}
-        {(post.link).includes("youtube.com/watch") || (post.link).includes("youtu.be/")
-        ? <YoutubePlayer>
-            <iframe title="post-link" width="502" height="281" src={srcYoutube}></iframe>
-            <p>{post.link}</p>
-          </YoutubePlayer>
-        : (<LinkSnippet onClick={()=>OpenModal(post.link)}>
-            <Text>
-              <h2>{post.linkTitle}</h2>
-              <p>{post.linkDescription}</p>
-              <div>
-                <p>{post.link}</p>
-              </div>
-            </Text>
-            <img src={post.linkImage} onError={(e)=>{e.target.onerror = null; e.target.src=(linkrLogo)}} alt='website'/>
-          </LinkSnippet>)
-         }  
+        <div className='teste'>
+            {controler ? (
+              <form onSubmit={Edit}>
+                <input
+                  type='text'
+                  required
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  ref={inputRefText}
+                  onKeyDown={(e) => keydowm(e)}
+                />
+              </form>
+            ) : (
+              <p>
+                <ReactHashtag
+                  renderHashtag={(hashtagValue) => (
+                    <Link to={`/hashtag/${hashtagValue}`.replace("#", "")}>
+                      <Hashtag>{hashtagValue}</Hashtag>
+                    </Link>
+                  )}>
+                  {isEdit ? editText : post.text}
+                </ReactHashtag>
+              </p>
+            )}
+          </div>
+          {post.link.includes("youtube.com/watch") ||
+          post.link.includes("youtu.be/") ? (
+            <YoutubePlayer>
+              <iframe width='502' height='281' src={srcYoutube}></iframe>
+              <p>{post.link}</p>
+            </YoutubePlayer>
+          ) : (
+            <LinkSnippet href={post.link} target={"_blank"}>
+              <Text>
+                <h2>{post.linkTitle}</h2>
+                <p>{post.linkDescription}</p>
+                <div>
+                  <p>{post.link}</p>
+                </div>
+              </Text>
+              <img src={post.linkImage || linkrLogo} alt='website' />
+            </LinkSnippet>
+          )}
       </Content>
     </PostContainer>
     {showComments ? <Comments id={id} postUser={post.user} /> : null}
@@ -454,6 +462,14 @@ const PostContainer = styled.div`
   border-radius: 16px;
   position: relative;
   z-index:0;
+
+  .button:focus,
+.button:hover {   
+  filter: brightness(700%);
+  animation: pulse 1s;
+  opacity: 0.8;
+
+}
   @media (max-width: 611px) {
     border-radius: 0;
     padding: 9px 18px 15px 15px;
@@ -469,14 +485,14 @@ const Profile = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 150px;
+  height: 100%;
+  width: 85px;
   padding-right: 10px;
   img {
     border-radius: 50%;
     width: 50px;
     height: 50px;
   }
-
   p {
     color: #fff;
     font-size: 12px;
@@ -522,15 +538,50 @@ const Content = styled.div`
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  white-space: nowrap;
   overflow: hidden;
+  font-weight: bold;
   text-overflow: ellipsis;
-  word-break: break-all;
+  .teste {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 23px;
+    margin-bottom: 1.5px;
 
+    form{
+      width:100%;
+    }
+    > h2 {
+      color: #fff;
+      font-size: 19px;
+      text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    }
+    > p {
+      font-size: 17px;
+      line-height: 23px;
+      color: #b7b7b7;
+      max-height: 70px;
+      margin-top: 19px;
+      margin-bottom: 14px;
+      text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    }
+  }
   .boxName {
     display: flex;
     justify-content: space-between;
-    width: 502px;
+    width: 100%;
+    
+    .map-icon{
+      cursor: pointer;
+    color:white;
+    margin-left:10px;
+    font-size:16px;
+  }
     @media (max-width: 611px) {
       width: 100%;
     }
@@ -547,7 +598,7 @@ const Content = styled.div`
     font-size: 19px;
   }
   > p {
-    font-size: 19px;
+    font-size: 17px;
     line-height: 23px;
     color: #b7b7b7;
     max-height: 70px;
@@ -559,18 +610,25 @@ const Content = styled.div`
     display: flex;
   }
   input {
+    display: flex;
+    flex-wrap: wrap;
     width: 100%;
-    height: 60px;
+    height: 23px;
     border-radius: 7px;
-    font-size: 14px;
-    padding: 4px 9px;
-    outline: 1px solid black;
-    overflow-y: auto;
-    overflow-wrap: break-word;
+    padding: 0px 5px;
     color: #4c4c4c;
+    background-color: #ffff;
+    outline: none;
+    border: none;
+    margin-top: 19px;
+    margin-bottom: 14px;
+    font-weight: bold;
+    font-size: 17px;
+    line-height: 23px;
   }
+
   @media (max-width: 611px) {
-    width: 82%;
+    width: 100%;
     > h2 {
       font-size: 16px;
     }
@@ -649,22 +707,36 @@ const Text = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow-y: scroll;
-  > h2 {
+  //overflow-y: scroll;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+> h2 {
     font-size: 16px;
     color: #cecece;
     margin-bottom: 10px;
+    text-overflow: ellipsis;
+    //overflow: hidden;
+    //white-space: nowrap;
   }
-  > p {
+
+   /* display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden; */
+
+> p {
     color: #9b9595;
     font-size: 11px;
     line-height: 15px;
     margin-bottom: 15px;
   }
-  > div {
+> div {
     width: 100%;
   }
-  > div p {
+> div p {
     color: #cecece;
     font-size: 11px;
   }
