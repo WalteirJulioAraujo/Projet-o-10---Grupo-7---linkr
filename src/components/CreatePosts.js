@@ -265,7 +265,6 @@ const Button = styled.button`
     font-size: 13px;
   }
 
-
 &:hover {
 filter: brightness(110%);
 opacity: 0.8;
