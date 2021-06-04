@@ -214,9 +214,9 @@ export default function Post({
         </Link>
         <div>
           {like === 1 ? (
-            <HeartIconFill onClick={toggleLike} />
+            <HeartIconFill  className="button" onClick={toggleLike} />
           ) : (
-            <HeartIconEmpty onClick={toggleLike} />
+            <HeartIconEmpty className="button"  onClick={toggleLike} />
           )}
           <Tooltip
             content={
@@ -274,7 +274,7 @@ export default function Post({
           </Tooltip>
         </div>
         <div>
-          <CommentIcon onClick={toggleComments}/>
+          <CommentIcon className="button" onClick={toggleComments}/>
           <p>{post.commentCount} comments</p>
         </div>
       </Profile>
@@ -285,14 +285,14 @@ export default function Post({
           </Link>
           <div class='icons'>
             {post.user.id === localstorage.user.id ? (
-              <FaPencilAlt onClick={ShowEdit} className='pencil-icon' />
+              <FaPencilAlt   onClick={ShowEdit} className='pencil-icon button' />
             ) : (
               ""
             )}
             {post.user.id === localstorage.user.id ? (
               <FaTrashAlt
                 id={id}
-                className='trash-icon'
+                className='trash-icon button'
                 onClick={moveToTrash}
               />
             ) : (
@@ -368,7 +368,6 @@ const YoutubePlayer = styled.div`
 const PostContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  //height: 276px;
   width: 100%;
   font-weight: 400;
   padding: 18px 18px 20px 21px;
@@ -377,6 +376,17 @@ const PostContainer = styled.div`
   border-radius: 16px;
   position: relative;
   z-index:0;
+.button {
+  box-shadow: 0 10px 20px -8px rgba(255, 255, 0,.7);
+}
+  .button:focus,
+.button:hover {   
+  filter: brightness(700%);
+  animation: pulse 1s;
+  opacity: 0.8;
+ 
+ 
+}
   @media (max-width: 611px) {
     border-radius: 0;
     padding: 9px 18px 15px 15px;
