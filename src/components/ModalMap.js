@@ -5,7 +5,6 @@ import { IoMdClose } from "react-icons/io";
 export default function ModalMap({ openMaps, setOpenMaps, post }) {
   const { geolocation } = post;
   function closeMaps() {
-
     setOpenMaps(false);
   }
 
@@ -83,8 +82,8 @@ const ContainerModal = styled.div`
   @media (max-width: 1024px) {
     width: 700px;
   }
-  @media (max-width: 800px) {
-    width: 350px;
+  @media (max-width: 820px) {
+    width: 400px;
   }
   @media (max-width: 568px) {
     width: 290px;

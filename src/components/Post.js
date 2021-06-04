@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-import ModalMap from './ModalMap'
 import styled from "styled-components";
 import ReactHashtag from "react-hashtag";
 import { FiHeart } from "react-icons/fi";
@@ -11,6 +10,7 @@ import "tippy.js/dist/tippy.css";
 import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import {FaMapMarkerAlt} from "react-icons/fa";
+
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
 import Comments from './Comments';
@@ -19,6 +19,7 @@ import linkrLogo from '../img/linkrLogo.JPG';
 import { BiRepost } from 'react-icons/bi'
 
 import UserContext from "../contexts/UserContext";
+import ModalMap from "./ModalMap";
 
 export default function Post({
   post,
@@ -215,30 +216,11 @@ export default function Post({
     setShowComments(!showComments)
   }
 
-  function DoYouWannaRepost(){
-    confirmAlert({
-      message: "Você deseja repostar esse link?",
-      buttons: [
-        {
-          label: "Sim, compartilhar!",
-          onClick: () => Repost(),
-          className: "yesShare",
-        },
-        {
-          label: "Não, voltar",
-        },
-      ],
-      closeOnClickOutside: false,
-    });
-  }
-
-  function Repost(){
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${post.id}/share`,{},config);
-    
+  function ViewLocation(){
+    setOpenMaps(true);
     request.then(reloadingPosts)
+    
+
   }
 
   return (
@@ -326,7 +308,7 @@ export default function Post({
         </div>
       </Profile>
       <Content>
-      <div class='boxName'>
+        <div class='boxName'>
           <div>
             <Link to={`/user/${postUser.id}`}>
             <h2>{postUser.username}</h2>
@@ -400,7 +382,7 @@ export default function Post({
     {showComments ? <Comments id={id} postUser={post.user} /> : null}
     </>
   );
-}
+          }
 
 const RepostContainer = styled.div`
   height: 44px;
@@ -433,7 +415,6 @@ const RepostContainer = styled.div`
 const YoutubePlayer = styled.div`
   display: flex;
   flex-direction: column;
-
   iframe{
     margin-top: 8px;
     margin-bottom: 8px;
@@ -471,6 +452,11 @@ const PostContainer = styled.div`
     padding: 9px 18px 15px 15px;
     height: 232px;
   }
+  .map-icon{
+    color:white;
+    margin-left:10px;
+    font-size:16px;
+  }
 `;
 const Profile = styled.div`
   display: flex;
@@ -497,7 +483,6 @@ const Profile = styled.div`
     margin-top : 18px;
 
   }
-
   @media (max-width: 611px) {
     height: 130px;
     margin-left: -6px;
@@ -578,7 +563,6 @@ const Content = styled.div`
       width: 100%;
     }
   }
-
   .pencil-icon {
     color: #ffffff;
     width: 14px;
@@ -586,7 +570,6 @@ const Content = styled.div`
     cursor: pointer;
     margin-left: 15px;
   }
-
   > h2 {
     color: #fff;
     font-size: 19px;
@@ -599,12 +582,10 @@ const Content = styled.div`
     margin-top: 19px;
     margin-bottom: 14px;
   }
-
   div {
     color: white;
     display: flex;
   }
-
   input {
     display: flex;
     flex-wrap: wrap;
@@ -622,7 +603,6 @@ const Content = styled.div`
     font-size: 17px;
     line-height: 23px;
   }
-
 
   @media (max-width: 611px) {
     width: 100%;
@@ -668,7 +648,6 @@ const LinkSnippet = styled.div`
   height: 155px;
   display: flex;
   justify-content: space-between;
-
   img {
     border-top-right-radius: 11px;
     border-bottom-right-radius: 11px;
@@ -805,16 +784,13 @@ const Tooltip = styled(Tippy)`
   line-height: 14px !important;
   color: #505050 !important;
   display: flex !important;
-
   span {
     width: 100%;
     display: flex;
   }
-
   p {
     color: #505050 !important;
   }
-
   .tippy-arrow {
     color: #ebebeb !important;
   }
