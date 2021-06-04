@@ -5,7 +5,6 @@ import { IoMdClose } from "react-icons/io";
 export default function ModalMap({ openMaps, setOpenMaps, post }) {
   const { geolocation } = post;
   function closeMaps() {
-
     setOpenMaps(false);
   }
 
@@ -45,12 +44,17 @@ export default function ModalMap({ openMaps, setOpenMaps, post }) {
 const ContainerModal = styled.div`
   width: 790px;
   height: 354px;
+  border-style: none;
+  border: none;
+  outline-color: transparent;
   border-radius: 20px;
   background-color: #333333;
   padding: 28px 33px 33px 33px;
   top: calc(50vh - 354px / 2);
   left: calc(50vw - 790px / 2);
   > div {
+    border: none;
+    outline-color: transparent;
     display: flex;
     justify-content: space-between;
     margin-bottom: 22px;
@@ -65,17 +69,25 @@ const ContainerModal = styled.div`
     .close-icon {
       cursor: pointer;
     }
-    @media (max-width: 568px) {
+    @media (max-width: 570px) {
       p {
-        font-size: 25px;
+        font-size: 18px;
       }
     }
   }
-  @media (max-width: 667px) {
-    width: 300px;
+  @media (max-width: 670px) {
     p {
       font-size: 32px;
     }
+  }
+  @media (max-width: 1024px) {
+    width: 700px;
+  }
+  @media (max-width: 820px) {
+    width: 400px;
+  }
+  @media (max-width: 568px) {
+    width: 290px;
   }
 `;
 
@@ -90,8 +102,8 @@ const Map = styled.div`
   p {
     z-index: 3;
     position: absolute;
-    top: 10px;
-    left: 300px;
+    top: 40%;
+    left: 40%;
   }
   iframe {
     top: 0;
@@ -115,13 +127,16 @@ const Map = styled.div`
     p {
       z-index: 3;
       position: absolute;
-      top: calc((100% - 36px)/2);
-      left: calc((100% - 36px)/2);
+      top: 40%;
+      left: 40%;
     }
   }
   @media (max-width: 568px) {
     p {
       font-size: 28px;
+      position: absolute;
+      top: 40%;
+      left: 30%;
     }
   }
 `;

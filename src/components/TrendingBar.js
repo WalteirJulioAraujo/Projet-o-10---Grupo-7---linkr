@@ -51,7 +51,7 @@ export default function TrendingBar() {
           </Link>
         ))}
       </ul>
-      <div>
+      <Div>
         <form onSubmit = {hashtags.lenght !== 0 ? RedirectToHashtag : ""}>
         <input 
           
@@ -61,7 +61,7 @@ export default function TrendingBar() {
           onChange={(e) => setSearchHashtags(e.target.value)}
          /></form>
         <FaHashtagAlt className='hashtag-icon' />
-      </div>
+      </Div>
     </>
   );
 }
@@ -82,3 +82,7 @@ const FaHashtagAlt = styled(FaHashtag)`
   top: 8px;
   left: 17px;
 `;
+
+const Div = styled.div`
+color:white;`
+;
