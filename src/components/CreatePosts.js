@@ -264,13 +264,10 @@ const Button = styled.button`
     top: 133px;
     font-size: 13px;
   }
-<<<<<<< HEAD
-`;
-=======
+
 
 &:hover {
 filter: brightness(110%);
 opacity: 0.8;
 }
 `;
->>>>>>> main
