@@ -376,16 +376,13 @@ const PostContainer = styled.div`
   border-radius: 16px;
   position: relative;
   z-index:0;
-.button {
-  box-shadow: 0 10px 20px -8px rgba(255, 255, 0,.7);
-}
-  .button:focus,
+
+.button:focus,
 .button:hover {   
   filter: brightness(700%);
   animation: pulse 1s;
   opacity: 0.8;
- 
- 
+
 }
   @media (max-width: 611px) {
     border-radius: 0;
