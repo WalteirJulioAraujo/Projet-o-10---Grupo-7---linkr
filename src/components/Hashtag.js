@@ -2,11 +2,12 @@ import { useState, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import styled from 'styled-components'
-import { Container, Posts, Trending, Load } from "../styledComponents/Content";
+import { Container, Posts, Trending, Load, PageTitle } from "../styledComponents/Content";
 import Navbar from './Navbar';
 import Post from './Post';
 import TrendingBar from "./TrendingBar";
 import useInterval from 'react-useinterval';
+import { ContainerModal,Modal } from '../styledComponents/Content';
 
 import UserContext from "../contexts/UserContext";
 
@@ -17,6 +18,9 @@ export default function Hashtag(){
     const [isError, setIsError] = useState(false)
     const [isEmpty, setIsEmpty] = useState(false)
     const { hashtag } = useParams();
+
+    const [modal, setModal] = useState(false);
+    const [link, setLink ] = useState("");
 
     useEffect(() => {loadingHashtag()},[hashtag])
 
@@ -42,13 +46,28 @@ export default function Hashtag(){
         request.catch( () => {setIsError(true); setIsLoading(false)})
     }
 
+    function OpenModal(e){
+        setLink(e);
+        setModal(true);
+    }
+    
+    function CloseModal(){
+          setModal(false);
+    }
+    
+    function OpenInNewTab(){
+          window.open(link)
+    }
+
     useInterval(loadingHashtag, 15000);
 
     return(
         <>
             <Navbar />
             <Container>
-                <h1>#{hashtag}</h1>
+                <PageTitle>
+                    <h1>#{hashtag}</h1>
+                </PageTitle>                
                 <div>
                     <Posts>
                         { isLoading ? <Load>Loading</Load> : ""}
@@ -58,6 +77,7 @@ export default function Hashtag(){
                             <Post 
                                 key={post.id} id={post.id} post={post} 
                                 postUser={post.user} likes={post.likes}
+                                OpenModal={OpenModal}
                             />)
                         }
                     </Posts>
@@ -66,6 +86,18 @@ export default function Hashtag(){
                     </Trending>
                 </div>
             </Container>
+            {modal
+            ?<ContainerModal>
+                <div>
+                    <button className="OpenInNewTab" onClick={OpenInNewTab}>Open in new tab</button>
+                    <button className="CloseModal"onClick={CloseModal}>X</button>
+                </div>
+                <Modal>
+                    <iframe src={link}></iframe>
+                </Modal>
+            </ContainerModal>
+            :""
+            }
         </>
     )
 }

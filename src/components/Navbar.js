@@ -1,16 +1,14 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { IoIosArrowDown } from "react-icons/io";
-import Usercontext from '../contexts/UserContext';
 import ClickAwayListener from 'react-click-away-listener';
+import SearchBox from './SearchBox';
 
 export default function Navbar() {
 
-    const { user } = useContext(Usercontext);
     const [showMenu, setShowMenu] = useState(0);
     const localstorage = JSON.parse(localStorage.user);
-    const token = localstorage.token;
     const image = localstorage.user.avatar;
 
     function toggleMenu() {
@@ -27,7 +25,8 @@ export default function Navbar() {
                 </Link>
                 <div></div>
             </Header>
-            <ClickAwayListener onClickAway={() => setShowMenu(0)}>
+            <SearchBox />
+            <ClickAwayListener onClickAway={() => setShowMenu(0)}>                
                 <NavMenu >
                     <Menu direction={showMenu} avatar={image}>
                         <IoIosArrowDown className="arrow" onClick={toggleMenu}/>
@@ -51,6 +50,53 @@ export default function Navbar() {
         </>
     )
 }
+
+const Header = styled.div`
+    width: 100%;
+    height: 72px;
+    padding: 10px 26px 10px 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #151515;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+
+    h1 {
+        font-family: 'Passion One', sans-serif;
+        font-size: 49px;
+        letter-spacing: 2px;
+        line-height: 54px;
+        color: #fff;
+    }
+
+    > div {
+        width: 110px;
+        height: 53px;
+    }
+
+    @media (max-width: 611px){
+        padding-left: 17px;
+        width: 100%;
+        h1{
+            font-size: 45px;
+        }
+    }
+`;
+
+const NavMenu = styled.div`
+    width: 132px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 10;
+`;
 
 const Menu = styled.div`
     width: 100%;
@@ -77,6 +123,7 @@ const Menu = styled.div`
         background-image: url("${props => props.avatar}");
         background-size: cover;
         background-position: center;
+        cursor: pointer;
     }
     @media (max-width: 611px){
         > div{
@@ -120,50 +167,6 @@ const Links = styled.div`
     }
 `;
 
-const NavMenu = styled.div`
-    width: 132px;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 10;
-`;
 
-const Header = styled.div`
-    width: 100%;
-    height: 72px;
-    padding: 10px 26px 10px 26px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #151515;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10;
 
-    h1 {
-        font-family: 'Passion One', sans-serif;
-        font-size: 49px;
-        letter-spacing: 2px;
-        line-height: 54px;
-        color: #fff;
-    }
-
-    > div {
-        width: 110px;
-        height: 53px;
-    }
-
-    @media (max-width: 611px){
-        padding-left: 17px;
-
-        h1{
-            font-size: 45px;
-        }
-    }
-`;
 

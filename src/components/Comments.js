@@ -10,15 +10,19 @@ import { GoPrimitiveDot } from 'react-icons/go'
 export default function Comments({id, postUser}) {
     const {followingUsers} = useContext(UserContext);
     const [comments, setComments] = useState([])
-    const [showInput, setShowInput] = useState(false)
+    const [show, setShow] = useState(false)
     const [text, setText] = useState("")
+    const [showMore, setShowMore] = useState(true)
+    const [list, setList] = useState([])
     const localstorage = JSON.parse(localStorage.user);
     const token = localstorage.token;
     const config = { headers:{ Authorization: `Bearer ${token}`}};
+    const limit = 3
+    const [index, setIndex] = useState(limit)
 
-    useEffect( () => loadingComments(),[])
+    useEffect( () => loadingComments(""),[])
    
-    function loadingComments() {
+    function loadingComments(param) {
         const request = axios.get(`https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${id}/comments`, config)
 
         request.then( response  => {
@@ -34,8 +38,14 @@ export default function Comments({id, postUser}) {
                     comment.who = "post's author"
                 }
             })
-            setComments(data)
-            setShowInput(true)
+            setList(data)
+            setShow(true)
+            if(param === 0){
+                setComments(data)
+                setShowMore(false)
+                return
+            }
+            setComments(data.slice(0,limit))
         })
     }
 
@@ -46,12 +56,21 @@ export default function Comments({id, postUser}) {
 
         request.then( () => {
             setText("")
-            loadingComments()
+            loadingComments(0)
         })
     }
+
+    function loadMore(){
+        const newIndex = index + limit;
+        const newShowMore = newIndex < (list.length -1);
+        setComments([...comments,...list.slice(index, newIndex)])
+        setIndex(newIndex)
+        setShowMore(newShowMore)
+    }
+
     return(
         <>
-        { showInput ? <CommentsContainer>
+        { show ? <CommentsContainer>
             {comments.map(comment => {
                return <CommentBox key={comment.id}>
                     <ProfilePicture>
@@ -76,6 +95,7 @@ export default function Comments({id, postUser}) {
                         </p>
                     </div>
             </CommentBox>})}
+            { (showMore && list.length > 3) ? <SeeMore><button onClick={loadMore}>See more</button></SeeMore> : null}
             <InputBox>
                 <ProfilePicture>
                     <img src={localstorage.user.avatar}/>
@@ -106,7 +126,7 @@ const CommentsContainer = styled.div`
     margin-bottom: 16px;
     margin-top: -46px;
     border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
+    border-bottom-right-radius: 16px;     
 
     .username{
         color: #FFF;
@@ -125,6 +145,20 @@ const CommentsContainer = styled.div`
     }
 
 `
+const SeeMore = styled.div`
+    display: flex;
+    justify-content: center;
+    button {
+        margin-top: 5px;
+        border-radius: 9px;
+        width: 70px;
+        background: #252525;
+        color: #FFF;
+        border: 1px solid #FFF;
+        cursor: pointer;
+    }
+`
+
 const ProfilePicture = styled.div`
     margin-right: 18px;
 
@@ -177,6 +211,10 @@ const CommentBox = styled.div`
     border-bottom: 1px solid #353535;
     margin: 0 20px;
     padding: 16px 0;
+
+    p {
+        word-break: break-all;
+    }
 `
 const PlaneIcon = styled(IoPaperPlaneOutline)`
     color: #FFF;
