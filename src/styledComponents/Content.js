@@ -23,14 +23,27 @@ export const Container = styled.div`
 
   @media (max-width: 611px) {
     width: 100vw;
-    margin-top: 91px;
-     h1 {
+    margin-top: 144px;
+    > h1 {
       margin-left: 17px;
       font-size: 30px;
     }
     > div {
       margin-top: 19px;
     }
+  }
+`;
+
+export const PageTitle = styled.div`
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  word-break: break-all;
+  @media(max-width: 611px){
+    padding: 0 17px;
+    position: relative;
   }
 `;
 
@@ -145,6 +158,63 @@ export const Load = styled.div`
         justify-content: center;
     }
     @media (max-width: 611px){
-        font-size: 25px;
+        font-size: 20px;
+        padding-top: 10px;
+        img{
+        height: 50px;
+        width: 50px;
+    }
 }
 `;
+
+export const ContainerModal = styled.div`
+    position:fixed;
+    top:100px;
+    left: calc((100vw - 64%)/2);
+    width: 64%;
+    height: 83%;
+    background-color: rgba(51, 51, 51, 0.9);
+    border-radius: 20px;
+
+    div{
+        display: flex;
+        justify-content:space-between;
+        align-items: center;
+        padding: 0px 40px;
+
+        button{
+            margin-top: 10px;
+            border:none;
+            color: #fff;
+            font-family: 'Lato', sans-serif;
+
+            &:hover{
+              cursor:pointer;
+            }
+        }
+    }
+    .OpenInNewTab{
+        background-color:#1877F2;
+        font-size:14px;
+        width:138px;
+        height:31px;
+        border-radius:5px;
+    }
+    .CloseModal{
+        background: none;
+        font-size: 23px;
+        font-weight: bold;
+    }
+`
+
+export const Modal = styled.div`
+    width: 90%;
+    height: 80%;
+    margin: 30px auto 0 auto;
+    background-color: #fff;
+
+    iframe{
+        width:100%;
+        height:100%;
+    }
+`

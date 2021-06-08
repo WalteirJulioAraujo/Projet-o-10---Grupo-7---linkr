@@ -101,6 +101,13 @@ body.react-confirm-alert-body-element {
   margin-right: 25px;
 }
 
+.react-confirm-alert-button-group > .yesShare {
+  background: #fff;
+  color: #1877f2;
+  margin-right: 25px;
+  width: fit-content;
+}
+
 @-webkit-keyframes react-confirm-alert-fadeIn {
   from {
     opacity: 0;

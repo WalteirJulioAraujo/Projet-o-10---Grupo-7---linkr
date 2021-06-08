@@ -53,8 +53,7 @@ export default function TrendingBar() {
       </ul>
       <div>
         <form onSubmit = {hashtags.lenght !== 0 ? RedirectToHashtag : ""}>
-        <input 
-          
+        <Input 
           type='text'
           value={searchHashtags}
           placeholder='type a hashtag'
@@ -73,7 +72,7 @@ const Hashtag = styled.span`
 `;
 
 const FaHashtagAlt = styled(FaHashtag)`
-  color: #ffffff;
+  color: #FFF;
   font-size: 19px;
   line-height: 23px;
   cursor: pointer;
@@ -82,3 +81,13 @@ const FaHashtagAlt = styled(FaHashtag)`
   top: 8px;
   left: 17px;
 `;
+const Input = styled.input`
+  ::placeholder{
+    color: #FFF;
+  }
+  :focus{
+    outline: 0;
+    border: 0 none;
+  }
+    color: #FFF; 
+`

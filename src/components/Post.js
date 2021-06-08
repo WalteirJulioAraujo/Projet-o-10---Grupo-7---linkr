@@ -1,19 +1,22 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
+import ModalMap from './ModalMap'
 import styled from "styled-components";
 import ReactHashtag from "react-hashtag";
 import { FiHeart } from "react-icons/fi";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart} from "react-icons/fa";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
-
+import {FaMapMarkerAlt} from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "../styles/react-confirm-alert.css";
-import Comments from "./Comments";
-import { AiOutlineComment } from "react-icons/ai";
+import Comments from './Comments';
+import { AiOutlineComment } from 'react-icons/ai';
+import linkrLogo from '../img/linkrLogo.JPG';
+import { BiRepost } from 'react-icons/bi'
 
 import UserContext from "../contexts/UserContext";
 
@@ -24,7 +27,10 @@ export default function Post({
   likes,
   reloadingPosts,
   loadMyPosts,
+  loadingHashtag,
+  hashtag,
   location,
+  OpenModal
 }) {
   const [peopleThatLiked, setPeopleThatLiked] = useState(likes);
   const [likeQuantity, setLikeQuantity] = useState(likes.length);
@@ -37,7 +43,9 @@ export default function Post({
   const inputRefText = useRef(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(false)
+  const [locationOfPost, setLocationOfPost] = useState({});
+  const[openMaps, setOpenMaps] = useState(false);
 
   useEffect(() => {
     likes.some(
@@ -47,6 +55,10 @@ export default function Post({
       ? setLike(1)
       : setLike(0);
   }, []);
+
+  function ViewLocation(){
+    setOpenMaps(true);
+    };
 
   function likePost(config) {
     const request = axios.post(
@@ -80,10 +92,10 @@ export default function Post({
       setUser(localStorage.user);
       setLike(0);
       setLikeQuantity(response.data.post.likes.length);
-      const teste = peopleThatLiked.filter(
+      const storePeopleThatLiked = peopleThatLiked.filter(
         (name) => name["user.username"] !== localstorage.user.username
       );
-      setPeopleThatLiked(teste);
+      setPeopleThatLiked(storePeopleThatLiked);
     });
     request.catch(() => {
       alert(
@@ -105,21 +117,41 @@ export default function Post({
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const request = axios.delete(
-      `https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${post.user.id}`,
-      config
-    );
-    request.then(() => {
-      setUser(localStorage.user);
-      if (location.pathname === "/timeline") {
-        reloadingPosts();
-      } else if (location.pathname === "/my-posts") {
-        loadMyPosts();
-      }
-    });
-    request.catch(() => {
-      alert("Não foi possível excluir o post");
-    });
+    if(post.hasOwnProperty('repostedBy')){
+      const request = axios.delete(
+        `https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${post.repostId}`,
+        config
+      );
+      request.then(() => {
+        setUser(localStorage.user);
+        if (location.pathname === "/timeline") {
+          reloadingPosts();
+        } else if (location.pathname === "/my-posts") {
+          loadMyPosts();
+        } 
+      })
+      request.catch(() => {
+        alert("Não foi possível excluir o post");
+      });
+    } else {
+        const request = axios.delete(
+          `https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${post.id}`,
+          config
+        );
+        request.then(() => {
+          setUser(localStorage.user);
+          if (location.pathname === "/timeline") {
+            reloadingPosts();
+          } else if (location.pathname === "/my-posts") {
+            loadMyPosts();
+          } else if (location.pathname === `/hashtag/${hashtag}`) {
+            loadingHashtag();
+          }
+        });
+        request.catch(() => {
+          alert("Não foi possível excluir o post");
+        });
+    }
   }
 
   function moveToTrash() {
@@ -202,105 +234,151 @@ export default function Post({
     setShowComments(!showComments);
   }
 
+  function DoYouWannaRepost(){
+    confirmAlert({
+      message: "Você deseja repostar esse link?",
+      buttons: [
+        {
+          label: "Sim, compartilhar!",
+          onClick: () => Repost(),
+          className: "yesShare",
+        },
+        {
+          label: "Não, voltar",
+        },
+      ],
+      closeOnClickOutside: false,
+    });
+  }
+
+  function Repost(){
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/linkr/posts/${post.id}/share`,{},config);
+    request.then(() => {
+      if (location.pathname === "/timeline") reloadingPosts();
+    })
+  }
+
   return (
     <>
-      <PostContainer key={postUser.id}>
-        <Profile>
-          <Link to={`/user/${postUser.id}`}>
-            <img src={postUser.avatar} alt={`${postUser.username}' profile`} />
-          </Link>
+    {post.hasOwnProperty('repostedBy')
+    ? <RepostContainer>
+        <RespostIcon className="RepostBar"></RespostIcon>
+        <p>re-posted by <span>{localstorage.user.id===post.repostedBy['id']?'You':post.repostedBy['username']}</span></p>
+        {(post.hasOwnProperty('repostedBy') && post.repostedBy.id === localstorage.user.id) ? 
+          <FaTrashAlt
+            id={id}
+            className='trash-icon'
+            onClick={moveToTrash}
+          /> : ""}
+      </RepostContainer>
+    : ""
+    }
+    <PostContainer key={postUser.id}>
+      <Profile>
+        <Link to={`/user/${postUser.id}`}>
+          <Image avatar={postUser.avatar}></Image>
+        </Link>
+        <div>
+          {like === 1 ? (
+            <HeartIconFill className="button" onClick={toggleLike} />
+          ) : (
+            <HeartIconEmpty className="button" onClick={toggleLike} />
+          )}
+          <Tooltip
+            content={
+              peopleThatLiked.length > 0 ? (
+                <span>
+                  {peopleThatLiked.map((name, i) => {
+                    if (i < 2) {
+                      if (i === 0)
+                        return (
+                          <p>{like === 1 ? "Você" : name["user.username"]}</p>
+                        );
+                      if (i === 1)
+                        return (
+                          <p>
+                            {peopleThatLiked.length === 2 ? `\u00A0 e ` : ","}{" "}
+                            {name["user.username"]}{" "}
+                          </p>
+                        );
+                    }
+                  })}
+                  <p>
+                    {" "}
+                    {"\u00A0"}
+                    {`${
+                      peopleThatLiked.length >= 4
+                        ? `e outras ${
+                            peopleThatLiked.length - 2
+                          } pessoas curtiram este post`
+                        : `${
+                            peopleThatLiked.length === 3
+                              ? `e mais uma pessoa curtiram este post`
+                              : `${
+                                  peopleThatLiked.length === 2
+                                    ? `curtiram este post`
+                                    : `${
+                                        peopleThatLiked.length === 1
+                                          ? `curtiu este post`
+                                          : ""
+                                      }`
+                                }`
+                          }`
+                    }`}
+                  </p>
+                </span>
+              ) : (
+                "Nenhuma curtida até o momento"
+              )
+            }
+            interactive={true}
+            placement='bottom'
+            arrow={true}>
+            <p>
+              {likeQuantity} {likeQuantity === 1 ? "like" : "likes"}
+            </p>
+          </Tooltip>
+        </div>
+        <div>
+          <CommentIcon className="button" onClick={toggleComments}/>
+          <p>{post.commentCount} comments</p>
+        </div>
+        <div>
+          <RespostIcon className="button" onClick={DoYouWannaRepost}/>
+          <p>{post.repostCount} re-posts</p>
+        </div>
+      </Profile>
+      <Content>
+      <div class='boxName'>
           <div>
-            {like === 1 ? (
-              <HeartIconFill className='button' onClick={toggleLike} />
-            ) : (
-              <HeartIconEmpty className='button' onClick={toggleLike} />
-            )}
-            <Tooltip
-              content={
-                peopleThatLiked.length > 0 ? (
-                  <span>
-                    {peopleThatLiked.map((name, i) => {
-                      if (i < 2) {
-                        if (i === 0)
-                          return (
-                            <p>{like === 1 ? "Você" : name["user.username"]}</p>
-                          );
-                        if (i === 1)
-                          return (
-                            <p>
-                              {peopleThatLiked.length === 2 ? `\u00A0 e ` : ","}{" "}
-                              {name["user.username"]}{" "}
-                            </p>
-                          );
-                      }
-                    })}
-                    <p>
-                      {" "}
-                      {"\u00A0"}
-                      {`${
-                        peopleThatLiked.length >= 4
-                          ? `e outras ${
-                              peopleThatLiked.length - 2
-                            } pessoas curtiram este post`
-                          : `${
-                              peopleThatLiked.length === 3
-                                ? `e mais uma pessoa curtiram este post`
-                                : `${
-                                    peopleThatLiked.length === 2
-                                      ? `curtiram este post`
-                                      : `${
-                                          peopleThatLiked.length === 1
-                                            ? `curtiu este post`
-                                            : ""
-                                        }`
-                                  }`
-                            }`
-                      }`}
-                    </p>
-                  </span>
-                ) : (
-                  "Nenhuma curtida até o momento"
-                )
-              }
-              interactive={true}
-              placement='bottom'
-              arrow={true}>
-              <p>
-                {likeQuantity} {likeQuantity === 1 ? "like" : "likes"}
-              </p>
-            </Tooltip>
-          </div>
-          <div>
-            <CommentIcon className='button' onClick={toggleComments} />
-            <p>{post.commentCount} comments</p>
-          </div>
-        </Profile>
-        <Content>
-          <div class='boxName'>
             <Link to={`/user/${postUser.id}`}>
-              <h2>{postUser.username}</h2>
+            <h2>{postUser.username}</h2>
             </Link>
-            <div class='icons'>
+            {post.geolocation ? <FaMapMarkerAlt className='map-icon' onClick={ViewLocation}/>
+            : ""}
+            {openMaps? <ModalMap  openMaps={openMaps} setOpenMaps={setOpenMaps} post={post}/> : ""}
+          </div>
+            { post.hasOwnProperty('repostedBy') || <div class='icons'>
               {post.user.id === localstorage.user.id ? (
-                <FaPencilAlt
-                  onClick={ShowEdit}
-                  className='pencil-icon button'
-                />
+                <FaPencilAlt onClick={ShowEdit} className='pencil-icon' />
               ) : (
                 ""
               )}
               {post.user.id === localstorage.user.id ? (
                 <FaTrashAlt
                   id={id}
-                  className='trash-icon button'
+                  className='trash-icon'
                   onClick={moveToTrash}
                 />
               ) : (
                 ""
               )}{" "}
-            </div>
+            </div>}
           </div>
-          <div className='teste'>
+        <div className='teste'>
             {controler ? (
               <form onSubmit={Edit}>
                 <input
@@ -325,7 +403,6 @@ export default function Post({
               </p>
             )}
           </div>
-
           {post.link.includes("youtube.com/watch") ||
           post.link.includes("youtu.be/") ? (
             <YoutubePlayer>
@@ -333,23 +410,56 @@ export default function Post({
               <p>{post.link}</p>
             </YoutubePlayer>
           ) : (
-            <LinkSnippet href={post.link} target={"_blank"}>
-              <Text>
-                <h2>{post.linkTitle}</h2>
-                <p>{post.linkDescription}</p>
-                <div>
-                  <p>{post.link}</p>
-                </div>
-              </Text>
-              <img src={post.linkImage} alt='website' />
-            </LinkSnippet>
+            (<LinkSnippet onClick={()=>OpenModal(post.link)}>
+            <Text>
+              <h2>{post.linkTitle}</h2>
+              <p>{post.linkDescription}</p>
+              <div>
+                <p>{post.link}</p>
+              </div>
+            </Text>
+            <img src={post.linkImage} onError={(e)=>{e.target.onerror = null; e.target.src=(linkrLogo)}} alt='website' />
+          </LinkSnippet>)
           )}
-        </Content>
-      </PostContainer>
-      {showComments ? <Comments id={id} postUser={post.user} /> : null}
+      </Content>
+    </PostContainer>
+    {showComments ? <Comments id={id} postUser={post.user} /> : null}
     </>
   );
 }
+
+const RepostContainer = styled.div`
+  height: 44px;
+  display: flex;
+  position: relative;
+  top:12px;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 16px 16px 0 0;
+  background-color:#1E1E1E;
+  
+  .RepostBar{
+    cursor: default;
+    margin-left: 24px;
+    margin-bottom: 10px;
+  }
+
+  p{
+    font-size:11px;
+    margin-left: 6px;
+    color: #FFF;
+    margin-bottom: 10px;
+
+    span{
+      font-weight: bold;
+    }
+  }
+  .trash-icon {
+    position: absolute;
+    top: 8.5px;
+    right: 22px;
+  }
+`
 
 const YoutubePlayer = styled.div`
   display: flex;
@@ -378,28 +488,28 @@ const PostContainer = styled.div`
   margin-bottom: 16px;
   border-radius: 16px;
   position: relative;
-  z-index: 0;
+  z-index:0;
 
   .button:focus,
-  .button:hover {
-    filter: brightness(700%);
-    animation: pulse 1s;
-    opacity: 0.8;
-  }
+.button:hover {   
+  filter: brightness(700%);
+  animation: pulse 1s;
+  opacity: 0.8;
+
+}
   @media (max-width: 611px) {
     border-radius: 0;
     padding: 9px 18px 15px 15px;
     height: 232px;
   }
 `;
-
 const Profile = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 150px;
-
+  height: 100%;
+  width: 85px;
+  padding-right: 10px;
   img {
     border-radius: 50%;
     width: 50px;
@@ -407,18 +517,21 @@ const Profile = styled.div`
   }
   p {
     color: #fff;
-    font-size: 11px;
+    font-size: 12px;
+    margin-top:8px;
   }
   > div {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: 32px;
+    margin-top : 18px;
+
   }
 
   @media (max-width: 611px) {
     height: 130px;
+    margin-left: -6px;
     img {
       width: 40px;
       height: 40px;
@@ -426,10 +539,19 @@ const Profile = styled.div`
     p {
       font-size: 9px;
     }
-    > div {
-      height: 28px;
+    >div{
+      height:28px;
+      width: 55px;
     }
   }
+`;
+const Image = styled.div`
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background: url("${props => props.avatar}");
+    background-size: cover;
+    background-position: center;
 `;
 const Content = styled.div`
   width: 503px;
@@ -443,12 +565,16 @@ const Content = styled.div`
   font-weight: bold;
   text-overflow: ellipsis;
   .teste {
-    width: 503px;
+    width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     line-height: 23px;
     margin-bottom: 1.5px;
+
+    form{
+      width:100%;
+    }
     > h2 {
       color: #fff;
       font-size: 19px;
@@ -471,8 +597,14 @@ const Content = styled.div`
   .boxName {
     display: flex;
     justify-content: space-between;
-    width: 502px;
-
+    width: 100%;
+    
+    .map-icon{
+      cursor: pointer;
+    color:white;
+    margin-left:10px;
+    font-size:16px;
+  }
     @media (max-width: 611px) {
       width: 100%;
     }
@@ -507,7 +639,7 @@ const Content = styled.div`
   input {
     display: flex;
     flex-wrap: wrap;
-    width: 503px;
+    width: 100%;
     height: 23px;
     border-radius: 7px;
     padding: 0px 5px;
@@ -522,8 +654,9 @@ const Content = styled.div`
     line-height: 23px;
   }
 
+
   @media (max-width: 611px) {
-    width: 82%;
+    width: 100%;
     > h2 {
       font-size: 16px;
     }
@@ -560,7 +693,7 @@ const Content = styled.div`
     }
   }
 `;
-const LinkSnippet = styled.a`
+const LinkSnippet = styled.div`
   border-radius: 11px;
   border: 1px solid #4d4d4d;
   height: 155px;
@@ -572,6 +705,20 @@ const LinkSnippet = styled.a`
     border-bottom-right-radius: 11px;
     height: 100%;
     width: 154px;
+    object-fit: cover;
+    background-position: center;
+  }
+
+  &:hover{
+    cursor:pointer;
+  }
+  img:before{
+    content: ' ';
+    border-top-right-radius: 11px;
+    border-bottom-right-radius: 11px;
+    height: 100%;
+    width: 154px;
+    background-image: url(${linkrLogo});
     object-fit: cover;
     background-position: center;
   }
@@ -590,21 +737,26 @@ const Text = styled.div`
   flex-direction: column;
   justify-content: center;
   //overflow-y: scroll;
-  > h2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+> h2 {
     font-size: 16px;
     color: #cecece;
     margin-bottom: 10px;
     text-overflow: ellipsis;
-    overflow: hidden;
+    //overflow: hidden;
     //white-space: nowrap;
   }
 
-  /* display: -webkit-box;
+   /* display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden; */
 
-  > p {
+> p {
     color: #9b9595;
     font-size: 11px;
     line-height: 15px;
@@ -613,10 +765,10 @@ const Text = styled.div`
     overflow: hidden;
     white-space: nowrap;
   }
-  > div {
+> div {
     width: 100%;
   }
-  > div p {
+> div p {
     color: #cecece;
     font-size: 11px;
   }
@@ -653,13 +805,13 @@ const FaTrashAlt = styled(FaTrash)`
   margin-left: 10px;
 `;
 const HeartIconEmpty = styled(FiHeart)`
-  font-size: 18px;
+  font-size: 21px;
   color: #fff;
   cursor: pointer;
 `;
 
 const HeartIconFill = styled(FaHeart)`
-  font-size: 18px;
+  font-size: 21px;
   color: #ac0000;
   cursor: pointer;
 `;
@@ -671,7 +823,12 @@ const Hashtag = styled.span`
 `;
 
 const CommentIcon = styled(AiOutlineComment)`
-  font-size: 18px;
+  font-size: 22px;
+  color: #fff;
+  cursor: pointer;
+`
+const RespostIcon = styled(BiRepost)`
+  font-size: 23px;
   color: #fff;
   cursor: pointer;
 `;
